@@ -1,0 +1,82 @@
+package interfaces.registered_positions
+
+import createItem
+import database.OwnerManager
+import database.OwnerManager.ownerId
+import database.RegisteredPositionManager
+import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
+import de.CypDasHuhn.Rooster.`interface`.Context
+import de.CypDasHuhn.Rooster.`interface`.Interface
+import de.CypDasHuhn.Rooster.`interface`.InterfaceItem
+import de.CypDasHuhn.Rooster.`interface`.RoosterInterface
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
+import org.jetbrains.exposed.sql.transactions.transaction
+import tComponent
+
+@RoosterInterface
+object ManageRegisteredPositionsInterface :
+    Interface<ManageRegisteredPositionsInterface.ManageRegisteredPositionsContext>(
+        "managed_positions_interface", ManageRegisteredPositionsContext::class
+    ) {
+    private const val BOTTOM_BAR = 5 * 9
+    override fun getInventory(player: Player, context: ManageRegisteredPositionsContext): Inventory {
+        return Bukkit.createInventory(null, 6 * 9, tComponent("managed_positions_interface_name", player))
+    }
+
+    class ManageRegisteredPositionsContext(
+        var row: Int,
+        private var ownerId: Int
+    ) : Context() {
+        val owner
+            get() = transaction { OwnerManager.Owner[ownerId] }
+    }
+
+    override fun registerClickableItems(): List<InterfaceItem<ManageRegisteredPositionsContext>> {
+        return listOf(
+            InterfaceItem(
+                condition = { it.slot < BOTTOM_BAR },
+                itemStackCreator = { createItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, Component.empty()) }
+            ),
+            InterfaceItem(
+                condition = {
+                    if (it.slot >= BOTTOM_BAR) return@InterfaceItem false
+
+                    return@InterfaceItem positionFromContext(it.slot, it.context) != null
+                },
+                itemStackCreator = {
+                    positionFromContext(it.slot, it.context)!!.representingItem
+                }
+            ),
+            InterfaceItem(
+                condition = { it.slot >= BOTTOM_BAR },
+                itemStackCreator = { createItem(Material.GRAY_STAINED_GLASS_PANE, Component.empty()) }
+            ),
+        )
+    }
+
+    override fun defaultContext(player: Player): ManageRegisteredPositionsContext {
+        return ManageRegisteredPositionsContext(row = 1, ownerId = player.dbPlayer().ownerId().value)
+    }
+
+    private fun positionFromContext(
+        slot: Int,
+        context: ManageRegisteredPositionsContext,
+    ): RegisteredPositionManager.RegisteredPosition? {
+        require(slot < BOTTOM_BAR) { "Needs to be inside the valid range" }
+
+        val position = slot + context.row * 9
+
+        return transaction {
+            RegisteredPositionManager.RegisteredPosition.find {
+                RegisteredPositionManager.RegisteredPositions.owner eq context.owner.id
+            }
+                .limit(1, offset = (position - 1).toLong()) // Limit to 1, skip (position - 1) records
+                .singleOrNull() // Get the single result or null if none exists
+        }
+    }
+}
+

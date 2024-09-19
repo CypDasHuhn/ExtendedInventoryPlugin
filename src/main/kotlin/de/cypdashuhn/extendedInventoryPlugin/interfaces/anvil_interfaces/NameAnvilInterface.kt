@@ -1,0 +1,3 @@
+package interfaces.anvil_interfaces
+
+object NameAnvilInterface

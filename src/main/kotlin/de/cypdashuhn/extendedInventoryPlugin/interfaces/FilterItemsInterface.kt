@@ -1,0 +1,3 @@
+package interfaces
+
+object FilterItemsInterface

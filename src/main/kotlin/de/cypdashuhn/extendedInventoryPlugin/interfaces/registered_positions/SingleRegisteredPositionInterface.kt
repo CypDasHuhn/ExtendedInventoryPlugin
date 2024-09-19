@@ -1,0 +1,3 @@
+package interfaces.registered_positions
+
+object SingleRegisteredPositionInterface

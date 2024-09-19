@@ -1,0 +1,4 @@
+name: ExtendedInventoryPlugin
+version: '1.0-SNAPSHOT'
+main: de.cypdashuhn.extendedInventoryPlugin.ExtendedInventoryPlugin
+api-version: '1.21'
