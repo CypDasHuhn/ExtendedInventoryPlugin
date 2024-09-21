@@ -1,0 +1,13 @@
+{
+  "item_interface_navigation": "Navigate",
+  "item_interface_switch_edit": "Switch to Edit",
+  "item_interface_switch_navigate": "Switch to Navigate",
+  "item_interface_jumpto_coord": "Jump to Coordinates",
+  "item_interface_jumpto_name": "Jump to Name",
+  "item_interface_filter": "Filter",
+  "item_interface_create_position": "Create Position",
+  "item_interface_manage_positions": "Manage Positions",
+  "item_interface_region_shift": "Region Shift",
+  "item_interface_move": "Move",
+  "item_interface_move_finish": "Finish Move"
+}

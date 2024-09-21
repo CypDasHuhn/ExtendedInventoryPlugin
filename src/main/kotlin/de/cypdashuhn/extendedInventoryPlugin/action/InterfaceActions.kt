@@ -1,4 +1,4 @@
-package action
+package de.cypdashuhn.extendedInventoryPlugin.action
 
 import org.bukkit.command.CommandSender
 

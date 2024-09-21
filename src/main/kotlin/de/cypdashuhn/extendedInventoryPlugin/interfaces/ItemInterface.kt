@@ -1,14 +1,19 @@
 package interfaces
 
-import Main.Companion.cache
-import createItem
-import database.OwnerManager
-import database.OwnerManager.ownerId
-import database.PositionManager
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
-import de.CypDasHuhn.Rooster.`interface`.*
-import de.CypDasHuhn.Rooster.listeners.ClickState
-import de.CypDasHuhn.Rooster.listeners.hasClicks
+import de.cypdashuhn.rooster.util.createItem
+import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
+import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.cache
+import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.playerManager
+import de.cypdashuhn.rooster.database.findEntry
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.listeners.ClickState
+import de.cypdashuhn.rooster.listeners.hasClicks
+import de.cypdashuhn.rooster.localization.tComponent
+import de.cypdashuhn.rooster.ui.Context
+import de.cypdashuhn.rooster.ui.InterfaceInfo
+import de.cypdashuhn.rooster.ui.RoosterInterface
+import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import interfaces.ItemInterface.ItemInterfaceContext
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -16,8 +21,8 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import tComponent
 import kotlin.math.max
 import kotlin.math.min
 
@@ -47,18 +52,18 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
 
     class ItemInterfaceContext(
         var position: PositionManager.PositionDTO = PositionManager.PositionDTO(0, 0),
-        var ownerId: Int,
+        var ownerId: Int?,
         var mode: InterfaceMode = InterfaceMode.NAVIGATE,
         var isItemMoving: Boolean = false,
         var regionShiftMode: RegionShiftMode? = null
     ) : Context() {
         val owner
-            get() = transaction { OwnerManager.Owner[ownerId] }
+            get() = transaction { PlayerManager.DbPlayer.findEntry(PlayerManager.Players.id eq ownerId)!! }
     }
 
     private const val MOVED_ITEMS_CACHE_KEY = "item_interface_move_item_cache"
 
-    override fun registerClickableItems(): List<InterfaceItem<ItemInterfaceContext>> {
+    override fun getInterfaceItems(): List<InterfaceItem<ItemInterfaceContext>> {
         return listOf(
             InterfaceItem( // registered items
                 condition = { (slot, rawContext, _) ->
@@ -96,9 +101,9 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                             RegionShiftMode.POS2_SELECTED -> {
                                 val targetPosition = slotToPosition(click.slot, context)!!
                                 val pos1 =
-                                    cache.get(REGION_SHIFT_CACHE_POS1, click.player) as PositionManager.PositionDTO
+                                    cache.getIfPresent(REGION_SHIFT_CACHE_POS1, click.player) as PositionManager.PositionDTO
                                 val pos2 =
-                                    cache.get(REGION_SHIFT_CACHE_POS2, click.player) as PositionManager.PositionDTO
+                                    cache.getIfPresent(REGION_SHIFT_CACHE_POS2, click.player) as PositionManager.PositionDTO
                                 val maxPos = PositionManager.PositionDTO(max(pos1.x, pos2.x), max(pos1.y, pos2.y))
                                 val minPos = PositionManager.PositionDTO(min(pos1.x, pos2.x), min(pos1.y, pos2.y))
 
@@ -114,7 +119,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                                     }
                                 } // range is valid (clear)
 
-                                cache.clear(REGION_SHIFT_CACHE_POS1, click.player)
+                                cache.invalidate(REGION_SHIFT_CACHE_POS1, click.player)
 
                                 TODO("ACTION - shift items in region")
                             }
@@ -141,7 +146,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 },
                 action = { (click, context, event) ->
                     if (context.isItemMoving) {
-                        val map = cache.getOrSet(
+                        val map = cache.get(
                             MOVED_ITEMS_CACHE_KEY,
                             click.player,
                             { mutableMapOf<PositionManager.PositionDTO, ItemStack?>() })
@@ -279,7 +284,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
     }
 
     override fun defaultContext(player: Player): ItemInterfaceContext {
-        return ItemInterfaceContext(ownerId = player.dbPlayer().ownerId().value)
+        return ItemInterfaceContext(ownerId = playerManager.playerByName(player.name)!!.id.value)
     }
 
     private fun transformToRelativeCoordinates(value: Int): Pair<Int, Int> {

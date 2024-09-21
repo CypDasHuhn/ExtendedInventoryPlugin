@@ -1,27 +1,28 @@
+package de.cypdashuhn.extendedInventoryPlugin
+
 import com.google.common.cache.CacheBuilder
-import database.OwnerManager
-import database.OwnerManager.insertOwnerIfMissing
-import database.PlayerStateManager.insertStateIfMissing
-import de.CypDasHuhn.Rooster.RoosterCache
-import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
+import de.cypdashuhn.extendedInventoryPlugin.database.PlayerStateManager.insertStateIfMissing
+import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.RoosterCache
+import de.cypdashuhn.rooster.database.utility_tables.ItemManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.concurrent.TimeUnit
 
 class Main : JavaPlugin() {
     companion object {
         val cache = RoosterCache<String, Any>(CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES))
+        val playerManager = PlayerManager()
+        val itemManager = ItemManager()
     }
 
     override fun onEnable() {
-        Rooster.afterPlayerJoin = { event ->
-            event.player.insertOwnerIfMissing()
+        Rooster.playerJoin = { event ->
             event.player.insertStateIfMissing()
         }
+        Rooster.localeProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
 
         Rooster.initialize(this)
-        OwnerManager.createGeneralOwnerIfMissing()
-
-        val item = ItemManager.insertOrGetItem(ItemStack(Material.STONE_SWORD))
     }
 }

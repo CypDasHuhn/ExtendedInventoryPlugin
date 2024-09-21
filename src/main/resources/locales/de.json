@@ -1,0 +1,13 @@
+{
+  "item_interface_navigation": "Navigieren",
+  "item_interface_switch_edit": "Wechsel zu Bearbeiten",
+  "item_interface_switch_navigate": "Wechsel zu Navigieren",
+  "item_interface_jumpto_coord": "Springe zu Koordinaten",
+  "item_interface_jumpto_name": "Springe zu Name",
+  "item_interface_filter": "Filter",
+  "item_interface_create_position": "Position Erstellen",
+  "item_interface_manage_positions": "Positionen Verwalten",
+  "item_interface_region_shift": "Regionsverschiebung",
+  "item_interface_move": "Bewegen",
+  "item_interface_move_finish": "Bewegung Beenden"
+}

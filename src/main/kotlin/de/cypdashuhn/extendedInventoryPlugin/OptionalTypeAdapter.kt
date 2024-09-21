@@ -9,11 +9,9 @@ class OptionalTypeAdapter<T> : JsonSerializer<Optional<T>>, JsonDeserializer<Opt
     }
 
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Optional<T> {
-        return if (json.isJsonNull) Optional.empty() else Optional.of(
-            context.deserialize(
-                json,
-                (typeOfT as ParameterizedType).actualTypeArguments[0]
-            )
-        )
+        return when (json) {
+            is JsonNull -> Optional.empty<T>() as Optional<T>
+            else -> context.deserialize(json, (typeOfT as ParameterizedType).actualTypeArguments[0])
+        }
     }
 }

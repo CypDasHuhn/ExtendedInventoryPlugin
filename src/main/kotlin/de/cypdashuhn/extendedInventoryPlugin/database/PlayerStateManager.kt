@@ -1,10 +1,10 @@
-package database
+package de.cypdashuhn.extendedInventoryPlugin.database
 
-import database.OwnerManager.ownerId
-import de.CypDasHuhn.Rooster.database.PlayerManager
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
-import de.CypDasHuhn.Rooster.database.RoosterTable
-import de.CypDasHuhn.Rooster.database.findEntry
+import de.cypdashuhn.rooster.database.RoosterTable
+import de.cypdashuhn.rooster.database.findEntry
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
+import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -17,8 +17,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object PlayerStateManager {
     @RoosterTable
     object PlayerStates : IntIdTable() {
-        val player = reference("player_id", PlayerManager.Players, onDelete = ReferenceOption.CASCADE)
-        val owner = reference("current_owner_id", OwnerManager.Owners)
+        val playerId = reference("player_id", PlayerManager.Players, onDelete = ReferenceOption.CASCADE)
+        val ownerId = reference("owner_id", PlayerManager.Players, onDelete = ReferenceOption.CASCADE).nullable()
         val positionX = integer("position_x")
         val positionY = integer("position_y")
     }
@@ -26,18 +26,18 @@ object PlayerStateManager {
     class PlayerState(id: EntityID<Int>) : IntEntity(id) {
         companion object : IntEntityClass<PlayerState>(PlayerStates)
 
-        var player by PlayerManager.Player referencedOn PlayerStates.player
-        var owner by OwnerManager.Owner referencedOn PlayerStates.owner
+        var player by PlayerManager.DbPlayer referencedOn PlayerStates.playerId
+        var owner by PlayerManager.DbPlayer optionalReferencedOn PlayerStates.ownerId
         var positionX by PlayerStates.positionX
         var positionY by PlayerStates.positionY
     }
 
-    fun PlayerManager.Player.state(): PlayerState {
-        return transaction { PlayerState.find { PlayerStates.player eq this@state.id }.firstOrNull()!! }
+    fun Player.state(): PlayerState {
+        return transaction { PlayerState.find { PlayerStates.playerId eq this@state.dbPlayer().id }.firstOrNull()!! }
     }
 
-    fun PlayerManager.Player.updateState(state: PlayerState) {
-        PlayerState.findSingleByAndUpdate(PlayerStates.player eq this.id) {
+    fun Player.updateState(state: PlayerState) {
+        PlayerState.findSingleByAndUpdate(PlayerStates.playerId eq this.dbPlayer().id) {
             it.player = state.player
             it.owner = state.owner
             it.positionX = state.positionX
@@ -45,13 +45,12 @@ object PlayerStateManager {
         }
     }
 
-    fun org.bukkit.entity.Player.insertStateIfMissing() {
-        val player = this.dbPlayer()
+    fun Player.insertStateIfMissing() {
         transaction {
-            if (PlayerState.findEntry(PlayerStates.player eq player.id) == null) {
+            if (PlayerState.findEntry(PlayerStates.playerId eq this@insertStateIfMissing.dbPlayer().id) == null) {
                 PlayerStates.insert {
-                    it[PlayerStates.player] = player.id
-                    it[owner] = player.ownerId()
+                    it[playerId] = playerId
+                    it[ownerId] = playerId
                     it[positionX] = 0
                     it[positionY] = 0
                 }

@@ -1,14 +1,13 @@
-package commands
+package de.cypdashuhn.extendedInventoryPlugin.commands
 
-import action.jumpToPosition
-import database.OwnerManager.owner
-import database.PositionManager
-import database.RegisteredPositionManager
-import de.CypDasHuhn.Rooster.commands.argument_constructors.ArgumentDetails
-import de.CypDasHuhn.Rooster.commands.argument_constructors.CentralizedArgumentList
-import de.CypDasHuhn.Rooster.commands.utility_argument_constructors.ListArgument
-import de.CypDasHuhn.Rooster.commands.utility_argument_constructors.NumberArgument
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
+import de.cypdashuhn.extendedInventoryPlugin.action.jumpToPosition
+import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
+import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager
+import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentDetails
+import de.cypdashuhn.rooster.commands.argument_constructors.CentralizedArgumentList
+import de.cypdashuhn.rooster.commands.utility_argument_constructors.ListArgument
+import de.cypdashuhn.rooster.commands.utility_argument_constructors.NumberArgument
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import org.bukkit.entity.Player
 
 enum class JumpToType {
@@ -34,7 +33,7 @@ val jumpToCommandArguments = CentralizedArgumentList(
                         entity = RegisteredPositionManager.RegisteredPosition,
                         displayField = RegisteredPositionManager.RegisteredPositions.name,
                         filter = { _, position ->
-                            position.owner == (argInfo.sender as Player).dbPlayer().owner()
+                            position.owner == (argInfo.sender as Player).dbPlayer()
                         },
                         key = NAME_COMMAND,
                         errorMissingMessageKey = "jumpto_name_specify",

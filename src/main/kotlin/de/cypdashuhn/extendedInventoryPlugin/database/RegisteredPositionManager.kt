@@ -1,14 +1,14 @@
-package database
+package de.cypdashuhn.extendedInventoryPlugin.database
 
-import ItemManager
 import OptionalTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import database.OwnerManager.ownerId
-import de.CypDasHuhn.Rooster.database.PlayerManager
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
-import de.CypDasHuhn.Rooster.database.RoosterTable
-import de.CypDasHuhn.Rooster.database.findEntry
+import de.cypdashuhn.rooster.database.RoosterTable
+import de.cypdashuhn.rooster.database.findEntry
+import de.cypdashuhn.rooster.database.utility_tables.ItemManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -25,7 +25,7 @@ import java.util.*
 object RegisteredPositionManager {
     @RoosterTable
     object RegisteredPositions : IntIdTable() {
-        val owner = reference("owner_id", OwnerManager.Owners, onDelete = ReferenceOption.CASCADE)
+        val ownerId = reference("player_id", PlayerManager.Players).nullable()
         val name = varchar("name", 50)
         val position = reference("position", PositionManager.Positions, onDelete = ReferenceOption.CASCADE)
         val representingItem = reference("representing_item", ItemManager.Items, onDelete = ReferenceOption.CASCADE)
@@ -34,7 +34,7 @@ object RegisteredPositionManager {
     class RegisteredPosition(id: EntityID<Int>) : IntEntity(id) {
         companion object : IntEntityClass<RegisteredPosition>(RegisteredPositions)
 
-        var owner by OwnerManager.Owner referencedOn RegisteredPositions.owner
+        var owner by PlayerManager.DbPlayer optionalReferencedOn RegisteredPositions.ownerId
         var position by PositionManager.Position referencedOn RegisteredPositions.position
         var name by RegisteredPositions.name
         var representingItem: ItemStack by ItemManager.Items.itemStack.transform(
@@ -56,26 +56,26 @@ object RegisteredPositionManager {
     }
 
     fun registerPosition(
-        player: PlayerManager.Player?,
+        player: Player?,
         newName: String,
         correspondedPosition: PositionManager.Position
     ) {
         transaction {
             RegisteredPositions.insert {
-                it[owner] = player.ownerId()
+                it[ownerId] = player?.dbPlayer()?.id
                 it[position] = correspondedPosition.id
                 it[name] = newName
             }
         }
     }
 
-    fun registeredPositionExists(player: org.bukkit.entity.Player, name: String): Boolean {
+    fun registeredPositionExists(player: Player, name: String): Boolean {
         return positionFromName(player, name) != null
     }
 
-    fun positionFromName(player: org.bukkit.entity.Player, name: String): RegisteredPosition? {
+    fun positionFromName(player: Player, name: String): RegisteredPosition? {
         return RegisteredPosition.findEntry(
-            RegisteredPositions.name eq name and (RegisteredPositions.owner eq player.dbPlayer().ownerId())
+            RegisteredPositions.name eq name and (RegisteredPositions.ownerId eq player.dbPlayer().id)
         )
     }
 }

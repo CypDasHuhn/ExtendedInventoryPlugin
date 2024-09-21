@@ -1,31 +1,27 @@
-package commands
+package de.cypdashuhn.extendedInventoryPlugin.commands
 
-import de.CypDasHuhn.Rooster.commands.argument_constructors.CentralArgument
-import de.CypDasHuhn.Rooster.commands.argument_constructors.CentralizedArgumentList
-import de.CypDasHuhn.Rooster.commands.argument_constructors.errorMessage
-import de.CypDasHuhn.Rooster.commands.argument_constructors.errorMessagePair
-import de.CypDasHuhn.Rooster.database.PlayerManager.getPlayerByName
-import de.CypDasHuhn.Rooster.database.PlayerManager.getPlayers
-import de.CypDasHuhn.Rooster.database.PlayerManager.isAdmin
-import de.CypDasHuhn.Rooster.database.PlayerManager.playerExists
-import de.CypDasHuhn.Rooster.database.PlayerManager.updateDatabase
+import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.playerManager
+import de.cypdashuhn.rooster.commands.argument_constructors.CentralArgument
+import de.cypdashuhn.rooster.commands.argument_constructors.CentralizedArgumentList
+import de.cypdashuhn.rooster.commands.argument_constructors.errorMessage
+import de.cypdashuhn.rooster.commands.argument_constructors.errorMessagePair
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 
 const val PLAYER_KEY = "player"
 
 val adminCommandArguments = CentralizedArgumentList(CentralArgument(
     key = PLAYER_KEY,
-    tabCompletions = { getPlayers().map { it.username } },
+    tabCompletions = { playerManager.players().map { it.name } },
     errorMissing = errorMessage("specify_player"),
-    isValidCompleter = { it.sender.isAdmin() },
+    isValidCompleter = { true }, // TODO: Add actuall Admin functionallity
     isValid = { argInfo ->
-        if (!playerExists(argInfo.arg)) errorMessagePair("player_doesnt_exist", "player")
+        if (playerManager.playerByName(argInfo.arg) == null) errorMessagePair("player_doesnt_exist", "player")
         Pair(true, null)
     },
     invoke = { (_, _, values) ->
         val playerName = values[PLAYER_KEY] as String
-        val player = getPlayerByName(playerName) ?: return@CentralArgument
+        val player = playerManager.playerByName(playerName) ?: return@CentralArgument
 
-        player.isAdmin = !player.isAdmin
-        player.updateDatabase()
+        // TODO: Add actuall Admin functionallity
     }
 ))

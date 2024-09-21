@@ -1,18 +1,15 @@
-package commands
+package de.cypdashuhn.extendedInventoryPlugin.commands
 
-import action.toggleItemMode
-import database.OwnerManager
-import database.OwnerManager.generalOwner
-import database.OwnerManager.owner
-import de.CypDasHuhn.Rooster.commands.RoosterCommand
-import de.CypDasHuhn.Rooster.commands.argument_constructors.ArgumentDetails
-import de.CypDasHuhn.Rooster.commands.argument_constructors.ArgumentList
-import de.CypDasHuhn.Rooster.commands.argument_constructors.RootArgument
-import de.CypDasHuhn.Rooster.commands.argument_constructors.errorMessage
-import de.CypDasHuhn.Rooster.commands.utility_argument_constructors.SimpleArgument
-import de.CypDasHuhn.Rooster.commands.utility_argument_constructors.SimpleModifierArgument
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
-import de.CypDasHuhn.Rooster.database.PlayerManager.setAndGetPlayerData
+import de.cypdashuhn.extendedInventoryPlugin.action.toggleItemMode
+import de.cypdashuhn.rooster.commands.RoosterCommand
+import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentDetails
+import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentList
+import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
+import de.cypdashuhn.rooster.commands.argument_constructors.errorMessage
+import de.cypdashuhn.rooster.commands.utility_argument_constructors.SimpleArgument
+import de.cypdashuhn.rooster.commands.utility_argument_constructors.SimpleModifierArgument
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import interfaces.ItemInterface
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -28,10 +25,10 @@ fun isGeneral(values: HashMap<String, Any?>): Boolean {
     return values[GENERAL_MODIFIER_KEY] as Boolean
 }
 
-fun ownerFromInfo(sender: CommandSender, values: HashMap<String, Any?>): OwnerManager.Owner = if (isGeneral(values)) {
-    generalOwner
+fun ownerFromInfo(sender: CommandSender, values: HashMap<String, Any?>): PlayerManager.DbPlayer? = if (isGeneral(values)) {
+    null
 } else {
-    (sender as Player).dbPlayer().owner()
+    (sender as Player).dbPlayer()
 }
 
 @Suppress("unused")
@@ -41,7 +38,6 @@ val extendedInventoryCommand = RootArgument(
     startingUnit = { sender ->
         if (sender !is Player) return@RootArgument false
 
-        setAndGetPlayerData(sender)
         true
     },
     invoke = { (sender, _, _) ->
@@ -77,8 +73,8 @@ val extendedInventoryCommand = RootArgument(
                     )
 
                     val owner = ownerFromInfo(sender, values)
-                    if (currentContext.owner.id.value != owner.id.value) { // reset context
-                        currentContext = ItemInterface.ItemInterfaceContext(ownerId = owner.id.value)
+                    if (currentContext.owner.id.value != owner?.id?.value) { // reset context
+                        currentContext = ItemInterface.ItemInterfaceContext(ownerId = owner?.id?.value)
                     }
 
                     ItemInterface.openInventory(sender, currentContext)

@@ -1,0 +1,13 @@
+{
+  "item_interface_navigation": "Nawiguj",
+  "item_interface_switch_edit": "Przełącz na Edytuj",
+  "item_interface_switch_navigate": "Przełącz na Nawigację",
+  "item_interface_jumpto_coord": "Skocz do Współrzędnych",
+  "item_interface_jumpto_name": "Skocz do Nazwy",
+  "item_interface_filter": "Filtruj",
+  "item_interface_create_position": "Utwórz Pozycję",
+  "item_interface_manage_positions": "Zarządzaj Pozycjami",
+  "item_interface_region_shift": "Przesunięcie Regionu",
+  "item_interface_move": "Przenieś",
+  "item_interface_move_finish": "Zakończ Przenoszenie"
+}

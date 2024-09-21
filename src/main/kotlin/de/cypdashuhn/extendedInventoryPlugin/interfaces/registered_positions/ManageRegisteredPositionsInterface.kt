@@ -1,21 +1,20 @@
 package interfaces.registered_positions
 
-import createItem
-import database.OwnerManager
-import database.OwnerManager.ownerId
-import database.RegisteredPositionManager
-import de.CypDasHuhn.Rooster.database.PlayerManager.dbPlayer
-import de.CypDasHuhn.Rooster.`interface`.Context
-import de.CypDasHuhn.Rooster.`interface`.Interface
-import de.CypDasHuhn.Rooster.`interface`.InterfaceItem
-import de.CypDasHuhn.Rooster.`interface`.RoosterInterface
+import de.cypdashuhn.rooster.util.createItem
+import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
+import de.cypdashuhn.rooster.localization.tComponent
+import de.cypdashuhn.rooster.ui.Context
+import de.cypdashuhn.rooster.ui.RoosterInterface
+import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.jetbrains.exposed.sql.transactions.transaction
-import tComponent
 
 @RoosterInterface
 object ManageRegisteredPositionsInterface :
@@ -32,10 +31,10 @@ object ManageRegisteredPositionsInterface :
         private var ownerId: Int
     ) : Context() {
         val owner
-            get() = transaction { OwnerManager.Owner[ownerId] }
+            get() = transaction { PlayerManager.DbPlayer[ownerId] }
     }
 
-    override fun registerClickableItems(): List<InterfaceItem<ManageRegisteredPositionsContext>> {
+    override fun getInterfaceItems(): List<InterfaceItem<ManageRegisteredPositionsContext>> {
         return listOf(
             InterfaceItem(
                 condition = { it.slot < BOTTOM_BAR },
@@ -59,7 +58,7 @@ object ManageRegisteredPositionsInterface :
     }
 
     override fun defaultContext(player: Player): ManageRegisteredPositionsContext {
-        return ManageRegisteredPositionsContext(row = 1, ownerId = player.dbPlayer().ownerId().value)
+        return ManageRegisteredPositionsContext(row = 1, ownerId = player.dbPlayer().id.value)
     }
 
     private fun positionFromContext(
@@ -72,7 +71,7 @@ object ManageRegisteredPositionsInterface :
 
         return transaction {
             RegisteredPositionManager.RegisteredPosition.find {
-                RegisteredPositionManager.RegisteredPositions.owner eq context.owner.id
+                RegisteredPositionManager.RegisteredPositions.ownerId eq context.owner.id
             }
                 .limit(1, offset = (position - 1).toLong()) // Limit to 1, skip (position - 1) records
                 .singleOrNull() // Get the single result or null if none exists
