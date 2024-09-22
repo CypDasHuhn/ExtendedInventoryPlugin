@@ -31,6 +31,7 @@ fun ownerFromInfo(sender: CommandSender, values: HashMap<String, Any?>): PlayerM
     (sender as Player).dbPlayer()
 }
 
+
 @Suppress("unused")
 @RoosterCommand
 val extendedInventoryCommand = RootArgument(
@@ -73,7 +74,7 @@ val extendedInventoryCommand = RootArgument(
                     )
 
                     val owner = ownerFromInfo(sender, values)
-                    if (currentContext.owner.id.value != owner?.id?.value) { // reset context
+                    if (currentContext.ownerId != owner?.id?.value) { // reset context
                         currentContext = ItemInterface.ItemInterfaceContext(ownerId = owner?.id?.value)
                     }
 

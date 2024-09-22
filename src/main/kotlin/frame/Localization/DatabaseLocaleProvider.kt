@@ -18,7 +18,7 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
         Rooster.dynamicTables += PlayerLanguages
     }
 
-    object PlayerLanguages : IntIdTable() {
+    object PlayerLanguages : IntIdTable("rooster_localization") {
         val playerUUID = varchar("player_uuid", 50)
         val language = varchar("language", 50)
     }

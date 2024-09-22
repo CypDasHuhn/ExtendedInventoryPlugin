@@ -24,7 +24,7 @@ open class PlayerManager : UtilityDatabase() {
         this.also { Rooster.playerManager = it }
     }
 
-    object Players : IntIdTable() {
+    object Players : IntIdTable("rooster_players") {
         val uuid = varchar("uuid", 36)
         val name = varchar("name", 16)
         val lastLogin = long("last_login")

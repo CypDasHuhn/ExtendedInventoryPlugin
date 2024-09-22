@@ -46,10 +46,11 @@ object PlayerStateManager {
     }
 
     fun Player.insertStateIfMissing() {
+        val playerId = this.dbPlayer().id
         transaction {
-            if (PlayerState.findEntry(PlayerStates.playerId eq this@insertStateIfMissing.dbPlayer().id) == null) {
+            if (PlayerState.findEntry(PlayerStates.playerId eq playerId) == null) {
                 PlayerStates.insert {
-                    it[playerId] = playerId
+                    it[PlayerStates.playerId] = playerId
                     it[ownerId] = playerId
                     it[positionX] = 0
                     it[positionY] = 0

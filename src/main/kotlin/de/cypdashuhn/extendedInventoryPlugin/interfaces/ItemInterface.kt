@@ -58,7 +58,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
         var regionShiftMode: RegionShiftMode? = null
     ) : Context() {
         val owner
-            get() = transaction { PlayerManager.DbPlayer.findEntry(PlayerManager.Players.id eq ownerId)!! }
+            get() = transaction { PlayerManager.DbPlayer.findEntry(PlayerManager.Players.id eq ownerId) }
     }
 
     private const val MOVED_ITEMS_CACHE_KEY = "item_interface_move_item_cache"

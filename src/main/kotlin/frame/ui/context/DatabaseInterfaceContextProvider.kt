@@ -24,7 +24,7 @@ class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
         Rooster.dynamicTables += InterfaceContexts
     }
 
-    object InterfaceContexts : IntIdTable() {
+    object InterfaceContexts : IntIdTable("rooster_interface_contexts") {
         val playerUUID = varchar("player_uuid", 50)
         val interfaceName = varchar("interface_name", 50)
         val content = text("content")
@@ -50,7 +50,7 @@ class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
             } else {
                 InterfaceContexts.insert {
                     it[playerUUID] = player.uuid()
-                    it[interfaceName] = interfaceName
+                    it[InterfaceContexts.interfaceName] = interfaceInstance.interfaceName
                     it[content] = jsonContent
                 }
             }

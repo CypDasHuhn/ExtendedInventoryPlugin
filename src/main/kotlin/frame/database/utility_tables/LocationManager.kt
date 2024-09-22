@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 open class LocationManager: UtilityDatabase() {
     override fun mainDatabase(): Table = Locations
 
-    object Locations : IntIdTable() {
+    object Locations : IntIdTable("rooster_locations") {
         val key = varchar("key", 36).nullable()
 
         val x = double("x")

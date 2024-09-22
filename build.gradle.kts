@@ -1,6 +1,6 @@
 plugins {
     id("xyz.jpenilla.run-paper") version "2.3.1"
-    kotlin("jvm") version "2.1.0-Beta1"
+    kotlin("jvm") version "2.0.20"
     id("net.minecrell.plugin-yml.bukkit") version "0.6.0"
 }
 
@@ -26,14 +26,17 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("com.google.code.gson:gson:2.10.1")
+    bukkitLibrary("com.google.code.gson:gson:2.10.1")
+    testImplementation("com.google.code.gson:gson:2.10.1")
 
     // exposed
     implementation("org.jetbrains.exposed:exposed-core:0.49.0")
     implementation("org.jetbrains.exposed:exposed-crypt:0.49.0")
-    implementation("org.jetbrains.exposed:exposed-dao:0.49.0")
+    bukkitLibrary("org.jetbrains.exposed:exposed-dao:0.49.0")
+    testImplementation("org.jetbrains.exposed:exposed-dao:0.49.0")
     implementation("org.jetbrains.exposed:exposed-java-time:0.49.0")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.49.0")
+    bukkitLibrary("org.jetbrains.exposed:exposed-jdbc:0.49.0")
+    testImplementation("org.jetbrains.exposed:exposed-jdbc:0.49.0")
     implementation("org.jetbrains.exposed:exposed-jodatime:0.49.0")
     implementation("org.jetbrains.exposed:exposed-json:0.49.0")
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.49.0")
@@ -42,10 +45,13 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.45.2.0")
 
     //implementation("com.github.CypDasHuhn:Rooster:3bfecdc7a1")
-    implementation("io.github.classgraph:classgraph:4.8.170")
+    bukkitLibrary("io.github.classgraph:classgraph:4.8.170")
+    testImplementation("io.github.classgraph:classgraph:4.8.170")
 
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
+
+    bukkitLibrary("org.jetbrains.kotlin:kotlin-stdlib:2.0.20")
 }
 
 val targetJavaVersion = 21
@@ -74,9 +80,11 @@ tasks {
     }
 }
 
+/*
 tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
     javaLauncher = javaToolchains.launcherFor {
+        vendor = JvmVendorSpec.GRAAL_VM
         languageVersion = JavaLanguageVersion.of(21)
     }
     jvmArgs("-XX:+AllowEnhancedClassRedefinition")
-}
+}+/

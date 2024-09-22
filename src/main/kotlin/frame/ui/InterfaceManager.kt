@@ -96,10 +96,10 @@ object InterfaceManager {
 
         val click = Click(event, player, event.currentItem, event.currentItem?.type, event.slot)
 
-        click(click, event, correspondingInterface, correspondingInterface.contextClass.safeCast(player)!!, player)
+        click(click, event, correspondingInterface, player)
     }
 
-    fun <T: Context> click(click: Click, inventoryClickEvent: InventoryClickEvent, targetInterface: Interface<T>, context: Context, player: Player) {
+    fun <T: Context> click(click: Click, inventoryClickEvent: InventoryClickEvent, targetInterface: Interface<T>, player: Player) {
         @Suppress("UNCHECKED_CAST")
         val typedInterface = targetInterface as Interface<Context>
 

@@ -3,13 +3,13 @@ package de.cypdashuhn.rooster.simulator
 import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.ui.Context
+import de.cypdashuhn.rooster.ui.interfaces.Interface
 import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.ItemStack
-import org.bukkit.plugin.java.JavaPlugin
 
 object Simulator {
     var currentInventory: Inventory? = null
-    var context: Context? = null
+    var currentContext: Context? = null
+    var currentInterface: Interface<Context>? = null
 
     fun startSimulator() {
         isSimulating = true
@@ -26,19 +26,18 @@ object Simulator {
 
         while (true) {
             print("> ")
-            val input = readlnOrNull()?.trim() ?: continue
+            val input = readlnOrNull() ?: continue
 
             values.clear()
-
-            if (input.equals("exit", ignoreCase = true)) {
-                println("Exiting the simulator.")
-                break
-            }
 
             val command = input.split(" ").firstOrNull()
             val args = input.substring((command?.length ?: -1)+1)
 
             when (command) {
+                "exit" -> {
+                    println("Exiting the simulator.")
+                    break
+                }
                 "complete" -> {
                     CommandSimulator.commandComplete(args, player)
                 }

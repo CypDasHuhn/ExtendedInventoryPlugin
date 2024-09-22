@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 open class ItemManager : UtilityDatabase() {
     override fun mainDatabase(): Table = Items
 
-    object Items : IntIdTable() {
+    object Items : IntIdTable("rooster_items") {
         val itemStack = text("item")
         val key = varchar("key", 50).nullable()
     }
@@ -31,7 +31,7 @@ open class ItemManager : UtilityDatabase() {
         var key: String? by Items.key
     }
 
-    fun insertOrGetItem(itemStack: ItemStack, key: String? = null, ignoreKeyItems: Boolean = false): ItemStack {
+    fun insertOrGetItem(itemStack: ItemStack, key: String? = null, ignoreKeyItems: Boolean = false): Item {
         return transaction {
             val itemStackJson = Gson().toJson(itemStack.serialize())
 
@@ -39,14 +39,12 @@ open class ItemManager : UtilityDatabase() {
             if (!ignoreKeyItems && key != null) query = query and (Items.key eq key)
             val item = Item.find { query }.firstOrNull()
 
-            if (item != null) return@transaction item.itemStack
+            if (item != null) return@transaction item
 
-            val dbItem = Item.new {
+            Item.new {
                 this.itemStack = itemStack
                 this.key = key
             }
-
-            dbItem.itemStack
         }
     }
 

@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.simulator
 
-import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent
 import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.ui.Click
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.InterfaceManager
 import de.cypdashuhn.rooster.ui.interfaces.Interface
@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
-import org.bukkit.inventory.InventoryView
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
@@ -77,7 +76,8 @@ object InterfaceSimulator {
         val inventory = InterfaceManager.getInventory(targetInterface, context, player)
 
         Simulator.currentInventory = inventory
-        Simulator.context = context
+        Simulator.currentContext = context
+        Simulator.currentInterface = targetInterface
 
         if (inventory.type == InventoryType.CHEST) {
             val rows = inventory.contents.size / 9
@@ -128,6 +128,9 @@ object InterfaceSimulator {
 
         player.openInventory(Simulator.currentInventory!!)
         val event = InventoryClickEvent(player.openInventory, InventoryType.SlotType.CONTAINER, slot, ClickType.LEFT, InventoryAction.NOTHING )
+        val item = Simulator.currentInventory!!.getItem(slot)
+        val click = Click(event, player, item, item?.type, event.slot)
+        InterfaceManager.click(click, event, Simulator.currentInterface!!, player)
     }
 
     fun parseSlot(command: String): Int? {

@@ -12,10 +12,10 @@ object Completer : TabCompleter {
         args: Array<String>
     ): List<String> {
         val result = ArgumentParser.parse(sender, label, args, ArgumentParser.CommandParseType.TabCompleter)
-        return result.tabCompleterList.returnWithStarting(args.last())
+        return result.tabCompleterList.withStarting(args.last())
     }
 
-    private fun List<String>.returnWithStarting(str: String, ignoreCase: Boolean = false): List<String> {
+    fun List<String>.withStarting(str: String, ignoreCase: Boolean = false): List<String> {
         return this.filter { it.startsWith(str, ignoreCase = ignoreCase) }
     }
 }
