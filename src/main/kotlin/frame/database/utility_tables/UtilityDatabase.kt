@@ -7,5 +7,6 @@ abstract class UtilityDatabase {
     init {
         Rooster.dynamicTables += mainDatabase()
     }
-    abstract fun mainDatabase(): Table
+
+    protected abstract fun mainDatabase(): Table
 }

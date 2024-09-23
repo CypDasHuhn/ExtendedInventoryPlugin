@@ -6,6 +6,7 @@ import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -17,14 +18,13 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import de.cypdashuhn.rooster.util.uuid
 
 class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
     init {
         Rooster.dynamicTables += InterfaceContexts
     }
 
-    object InterfaceContexts : IntIdTable("rooster_interface_contexts") {
+    object InterfaceContexts : IntIdTable("RoosterInterfaceContexts") {
         val playerUUID = varchar("player_uuid", 50)
         val interfaceName = varchar("interface_name", 50)
         val content = text("content")
@@ -50,7 +50,7 @@ class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
             } else {
                 InterfaceContexts.insert {
                     it[playerUUID] = player.uuid()
-                    it[InterfaceContexts.interfaceName] = interfaceInstance.interfaceName
+                    it[interfaceName] = interfaceInstance.interfaceName
                     it[content] = jsonContent
                 }
             }

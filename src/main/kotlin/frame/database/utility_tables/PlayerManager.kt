@@ -2,22 +2,22 @@ package de.cypdashuhn.rooster.database.utility_tables
 
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Players.uuid
+import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
-import de.cypdashuhn.rooster.util.uuid
-import org.bukkit.entity.Player
 
 /**
  * Not Completely Necessary. Use BukkitAPI instead. This manager is if your
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-open class PlayerManager : UtilityDatabase() {
+class PlayerManager : UtilityDatabase() {
     override fun mainDatabase() = Players
 
     init {

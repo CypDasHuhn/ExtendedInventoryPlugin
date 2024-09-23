@@ -3,6 +3,8 @@ package de.cypdashuhn.rooster.ui
 import de.cypdashuhn.rooster.Rooster.cache
 import de.cypdashuhn.rooster.Rooster.interfaceContextProvider
 import de.cypdashuhn.rooster.Rooster.registeredInterfaces
+import de.cypdashuhn.rooster.simulator.InterfaceSimulator
+import de.cypdashuhn.rooster.simulator.Simulator
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
@@ -44,22 +46,28 @@ object InterfaceManager {
 
         interfaceContextProvider.updateContext(player, targetInterface, context)
 
-        player.openInventory(inventory)
+        Simulator.onlyTest {
+            InterfaceSimulator.printInterface(inventory)
+        }
+        Simulator.nonTest {
+            player.openInventory(inventory)
+        }
     }
 
     /**
      * This function fills the [Inventory] with [ItemStack]'s using the
-     * registered [clickableItems]'s and the current Interface State
+     * registered [interfaceItems]'s and the current Interface State
      * ([context]).
      */
     private fun <T : Context> Inventory.fillInventory(
-        clickableItems: List<InterfaceItem<T>>,
+        interfaceItems: List<InterfaceItem<T>>,
         context: T,
         player: Player
     ): Inventory {
         for (slot in 0 until this.size) {
-            clickableItems
+            interfaceItems
                 .filter { it.condition(InterfaceInfo(slot, context, player)) }
+                .sortedBy { it.priority(InterfaceInfo(slot, context, player)) }
                 .forEach { this@fillInventory.setItem(slot, it.itemStackCreator(InterfaceInfo(slot, context, player))) }
         }
         return this
@@ -74,6 +82,7 @@ object InterfaceManager {
         val items = targetInventory.getInterfaceItems()
         for (slot in 0 until inventory.size) {
             items.filter { it.condition(InterfaceInfo(slot, context, player)) }
+                .sortedBy { it.priority(InterfaceInfo(slot, context, player)) }
                 .forEach {
                     inventory.setItem(slot, it.itemStackCreator(InterfaceInfo(slot, context, player)))
                 }
@@ -99,7 +108,12 @@ object InterfaceManager {
         click(click, event, correspondingInterface, player)
     }
 
-    fun <T: Context> click(click: Click, inventoryClickEvent: InventoryClickEvent, targetInterface: Interface<T>, player: Player) {
+    fun <T : Context> click(
+        click: Click,
+        inventoryClickEvent: InventoryClickEvent,
+        targetInterface: Interface<T>,
+        player: Player
+    ) {
         @Suppress("UNCHECKED_CAST")
         val typedInterface = targetInterface as Interface<Context>
 
@@ -110,6 +124,7 @@ object InterfaceManager {
         if (typedContext != null) {
             typedInterface.items
                 .filter { it.condition(InterfaceInfo(click.slot, typedContext, click.player)) }
+                .sortedBy { it.priority(InterfaceInfo(click.slot, context, player)) }
                 .forEach { it.action(ClickInfo(click, typedContext, inventoryClickEvent, targetInterface)) }
         } else {
             println("Failed to cast context to the expected type ${typedInterface.contextClass}")

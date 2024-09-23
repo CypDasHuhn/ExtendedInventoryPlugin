@@ -5,7 +5,6 @@ import database.utility_tables.attributes.AttributeKey
 import database.utility_tables.attributes.PlayerAttributeManager
 import de.cypdashuhn.extendedInventoryPlugin.database.PlayerStateManager.insertStateIfMissing
 import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
-import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.RoosterCache
 import de.cypdashuhn.rooster.database.utility_tables.ItemManager
@@ -33,11 +32,11 @@ class Main : JavaPlugin() {
         Rooster.playerJoin = { event ->
             event.player.insertStateIfMissing()
 
-            playerAttributeManager.setAttribute(event.player, playerTestKey, true)
-            playerAttributeManager.setAttribute(event.player, playerTestKeyTwo, 4)
+            playerAttributeManager.set(event.player, playerTestKey, true)
+            playerAttributeManager.set(event.player, playerTestKeyTwo, 4)
 
-            val attribute = playerAttributeManager.getAttribute(event.player, playerTestKey)
-            val attributeTwo = playerAttributeManager.getAttributeNullable(event.player, playerTestKeyTwo)
+            val attribute = playerAttributeManager.get(event.player, playerTestKey)
+            val attributeTwo = playerAttributeManager.getNullable(event.player, playerTestKeyTwo)
 
             println("$attribute and $attributeTwo")
 
@@ -46,7 +45,7 @@ class Main : JavaPlugin() {
                     x = 0
                     y = 0
                     ownerId = event.player.dbPlayer()
-                    item = itemManager.insertOrGetItem(createItem(Material.STONE_SWORD))
+                    item = itemManager.upsertItem(createItem(Material.STONE_SWORD))
                 }
             }
         }

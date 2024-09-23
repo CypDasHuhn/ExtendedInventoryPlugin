@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
@@ -79,18 +80,7 @@ object InterfaceSimulator {
         Simulator.currentContext = context
         Simulator.currentInterface = targetInterface
 
-        if (inventory.type == InventoryType.CHEST) {
-            val rows = inventory.contents.size / 9
-
-            for (row in 0 until rows) {
-                for (slot in 0 until 9) {
-                    val item = inventory.getItem(slot + row * 9) ?: createItem(Material.AIR)
-                    val short = item.type.short()
-                    print("[$short] ")
-                }
-                println("")
-            }
-        }
+        printInterface(inventory)
 
         return OpenInterfaceResults.OK
     }
@@ -126,18 +116,55 @@ object InterfaceSimulator {
             return
         }
 
+        val clickState = parseClickState(command) ?: return
+
         player.openInventory(Simulator.currentInventory!!)
-        val event = InventoryClickEvent(player.openInventory, InventoryType.SlotType.CONTAINER, slot, ClickType.LEFT, InventoryAction.NOTHING )
+        val event = InventoryClickEvent(
+            player.openInventory,
+            InventoryType.SlotType.CONTAINER,
+            slot,
+            clickState,
+            InventoryAction.NOTHING
+        )
         val item = Simulator.currentInventory!!.getItem(slot)
         val click = Click(event, player, item, item?.type, event.slot)
         InterfaceManager.click(click, event, Simulator.currentInterface!!, player)
+    }
+
+
+    fun colorFromShort(short: String): String {
+        val hash = short.hashCode()
+        val colorCode = (hash % 6) + 31 // ANSI color codes from 31 to 36 for red, green, yellow, blue, magenta, cyan
+        return "\u001B[${colorCode}m"  // ANSI escape code
+    }
+
+    fun resetColor(): String {
+        return "\u001B[0m"
+    }
+
+    fun printInterface(inventory: Inventory) {
+        if (inventory.type == InventoryType.CHEST) {
+            val rows = inventory.contents.size / 9
+
+            println("# ${inventory.name} #")
+            for (row in 0 until rows) {
+                for (slot in 0 until 9) {
+                    val item = inventory.getItem(slot + row * 9) ?: createItem(Material.AIR)
+                    val short = item.type.short()
+                    val color = colorFromShort(short)
+                    val reset = resetColor()
+                    print("${color}[$short]${reset} ")  // print the colored brackets and reset after each item
+                }
+                println("")
+            }
+        }
     }
 
     fun parseSlot(command: String): Int? {
         var slot = command.split(" ").first().toIntOrNull()
         if (slot == null) {
             // alternative x-y parsing
-            val xy = command.split(" ").last().split("-")
+            val xy = command.split(" ").first().split("-")
 
             if (xy.size != 2) {
                 println("Invalid slot format!")
@@ -154,9 +181,23 @@ object InterfaceSimulator {
 
             x -= 1
             y -= 1
-            slot = x+(y*9)
+            slot = x + (y * 9)
         }
         return slot
+    }
+
+    fun parseClickState(command: String): ClickType? {
+        val commandSplit = command.split(" ")
+        if (commandSplit.size > 1) {
+            val clickState = commandSplit[1]
+            try {
+                return ClickType.valueOf(clickState)
+            } catch (e: Exception) {
+                println("Invalid click state! Valid States: ")
+                ClickType.entries.forEach { println("# $it") }
+                return null
+            }
+        } else return ClickType.LEFT
     }
 
     fun contextFromText(contextCommand: String, targetInterface: Interface<Context>): Pair<String, Context?> {

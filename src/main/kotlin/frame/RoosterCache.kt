@@ -2,10 +2,8 @@ package de.cypdashuhn.rooster
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import org.bukkit.command.BlockCommandSender
+import de.cypdashuhn.rooster.util.uniqueKey
 import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
-import org.bukkit.entity.Player
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -13,14 +11,6 @@ import java.util.concurrent.TimeUnit
 class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
     private var cache: Cache<Pair<String, K>, V> = cacheBuilder.build()
 
-    private fun CommandSender.uniqueKey(): String {
-        return when (this) {
-            is Player -> this.uniqueId.toString()
-            is ConsoleCommandSender -> "console"
-            is BlockCommandSender -> "${this.block.location.toVector()}"
-            else -> "unknown-${this::class.simpleName}"
-        }
-    }
     private val generalKey = "general"
 
     fun getIfPresent(key: K, sender: CommandSender? = null): V? {

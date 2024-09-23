@@ -10,10 +10,10 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
-open class LocationManager: UtilityDatabase() {
+class LocationManager : UtilityDatabase() {
     override fun mainDatabase(): Table = Locations
 
-    object Locations : IntIdTable("rooster_locations") {
+    object Locations : IntIdTable("RoosterLocations") {
         val key = varchar("key", 36).nullable()
 
         val x = double("x")

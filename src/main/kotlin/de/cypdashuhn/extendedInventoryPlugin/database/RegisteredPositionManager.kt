@@ -1,8 +1,6 @@
 package de.cypdashuhn.extendedInventoryPlugin.database
 
-import OptionalTypeAdapter
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.database.utility_tables.ItemManager
@@ -20,7 +18,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
-import java.util.*
 
 object RegisteredPositionManager {
     @RoosterTable
@@ -37,15 +34,10 @@ object RegisteredPositionManager {
         var owner by PlayerManager.DbPlayer optionalReferencedOn RegisteredPositions.ownerId
         var position by PositionManager.Position referencedOn RegisteredPositions.position
         var name by RegisteredPositions.name
-        var representingItem: ItemStack by ItemManager.Items.itemStack.transform(
-            { gson.toJson(it) },
-            { gson.fromJson(it, ItemStack::class.java) }
-        )
+        var representingItem: ItemStack by ItemManager.Items.transformedItem
     }
 
-    private val gson: Gson = GsonBuilder()
-        .registerTypeAdapter(Optional::class.java, OptionalTypeAdapter<Any>())
-        .create()
+    private val gson: Gson = Gson()
 
     fun renameRegisteredPosition(registeredPosition: RegisteredPosition, newName: String) {
         transaction {

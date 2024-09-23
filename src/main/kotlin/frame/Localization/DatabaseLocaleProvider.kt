@@ -3,6 +3,7 @@ package de.cypdashuhn.rooster.localization
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.Rooster.plugin
 import de.cypdashuhn.rooster.database.findEntry
+import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.entity.Player
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -10,7 +11,6 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
-import de.cypdashuhn.rooster.util.uuid
 
 class DatabaseLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
     LocaleProvider(locales, defaultLocale) {
@@ -18,7 +18,7 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
         Rooster.dynamicTables += PlayerLanguages
     }
 
-    object PlayerLanguages : IntIdTable("rooster_localization") {
+    object PlayerLanguages : IntIdTable("RoosterLocalization") {
         val playerUUID = varchar("player_uuid", 50)
         val language = varchar("language", 50)
     }

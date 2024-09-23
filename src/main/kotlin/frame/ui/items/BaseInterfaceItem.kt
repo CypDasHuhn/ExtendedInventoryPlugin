@@ -8,5 +8,6 @@ import org.bukkit.inventory.ItemStack
 abstract class BaseInterfaceItem<T : Context>(
     var condition: (InterfaceInfo<T>) -> Boolean,
     var itemStackCreator: (InterfaceInfo<T>) -> ItemStack,
-    var action: (ClickInfo<T>) -> Unit
+    var action: (ClickInfo<T>) -> Unit,
+    var priority: (InterfaceInfo<T>) -> Int
 )

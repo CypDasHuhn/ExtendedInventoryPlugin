@@ -1,13 +1,12 @@
 package de.cypdashuhn.rooster.util
 
-import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.playerManager
-import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.DbPlayer
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.Axis
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.command.BlockCommandSender
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
 import org.bukkit.entity.minecart.CommandMinecart
 import org.bukkit.inventory.ItemStack
@@ -46,6 +45,24 @@ fun createItem(
     return item
 }
 
+fun ItemStack.modify(
+    material: Material?,
+    name: TextComponent? = null,
+    description: List<TextComponent>? = null,
+    amount: Int? = null,
+    /** Not implemented */
+    nbt: Any? = null,
+): ItemStack {
+    val itemMeta = this.itemMeta
+    val item = if (material != null) ItemStack(material) else this
+    if (amount != null) item.amount = amount
+    if (name != null) itemMeta.displayName(name)
+    if (description != null) itemMeta.lore(description)
+    item.itemMeta = itemMeta
+
+    return item
+}
+
 fun Location.value(axis: Axis): Double {
     return when (axis) {
         Axis.X -> this.x
@@ -68,3 +85,12 @@ infix fun <T> ((T) -> Boolean).or(other: (T) -> Boolean): (T) -> Boolean {
 }*/
 
 fun Player.uuid() = this.uniqueId.toString()
+
+fun CommandSender.uniqueKey(): String {
+    return when (this) {
+        is Player -> this.uniqueId.toString()
+        is ConsoleCommandSender -> "console"
+        is BlockCommandSender -> "${this.block.location.toVector()}"
+        else -> "unknown-${this::class.simpleName}"
+    }
+}

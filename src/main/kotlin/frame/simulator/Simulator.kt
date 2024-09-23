@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
+import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
 object Simulator {
@@ -11,7 +12,7 @@ object Simulator {
     var currentContext: Context? = null
     var currentInterface: Interface<Context>? = null
 
-    fun startSimulator() {
+    fun startSimulator(playerAction: (Player) -> Unit) {
         isSimulating = true
 
         val server = MockBukkit.mock()
@@ -21,6 +22,7 @@ object Simulator {
 
         var player = server.addPlayer()
         Rooster.playerManager!!.playerLogin(player)
+        playerAction(player)
 
         println("Welcome to the Input Simulator. Type commands to simulate input. Type 'exit' to quit.")
 
@@ -31,13 +33,14 @@ object Simulator {
             values.clear()
 
             val command = input.split(" ").firstOrNull()
-            val args = input.substring((command?.length ?: -1)+1)
+            val args = input.substring((command?.length ?: -1) + 1)
 
             when (command) {
                 "exit" -> {
                     println("Exiting the simulator.")
                     break
                 }
+
                 "complete" -> {
                     CommandSimulator.commandComplete(args, player)
                 }

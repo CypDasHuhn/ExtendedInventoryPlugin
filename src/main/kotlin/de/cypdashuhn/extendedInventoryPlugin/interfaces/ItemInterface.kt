@@ -1,9 +1,8 @@
 package interfaces
 
-import de.cypdashuhn.rooster.util.createItem
-import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
 import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.cache
 import de.cypdashuhn.extendedInventoryPlugin.Main.Companion.playerManager
+import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
 import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.ClickState
@@ -14,6 +13,7 @@ import de.cypdashuhn.rooster.ui.InterfaceInfo
 import de.cypdashuhn.rooster.ui.RoosterInterface
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.util.createItem
 import interfaces.ItemInterface.ItemInterfaceContext
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
@@ -36,7 +36,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
     private const val REGION_SHIFT_CACHE_POS2 = "region_shift_pos2"
 
     override fun getInventory(player: Player, context: ItemInterfaceContext): Inventory {
-        return Bukkit.createInventory(null, 6 * 9, "Item Interface")
+        return Bukkit.createInventory(null, 6 * 9, "Item Interface #${context.position.x}-${context.position.y}")
     }
 
     enum class InterfaceMode {
@@ -101,9 +101,15 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                             RegionShiftMode.POS2_SELECTED -> {
                                 val targetPosition = slotToPosition(click.slot, context)!!
                                 val pos1 =
-                                    cache.getIfPresent(REGION_SHIFT_CACHE_POS1, click.player) as PositionManager.PositionDTO
+                                    cache.getIfPresent(
+                                        REGION_SHIFT_CACHE_POS1,
+                                        click.player
+                                    ) as PositionManager.PositionDTO
                                 val pos2 =
-                                    cache.getIfPresent(REGION_SHIFT_CACHE_POS2, click.player) as PositionManager.PositionDTO
+                                    cache.getIfPresent(
+                                        REGION_SHIFT_CACHE_POS2,
+                                        click.player
+                                    ) as PositionManager.PositionDTO
                                 val maxPos = PositionManager.PositionDTO(max(pos1.x, pos2.x), max(pos1.y, pos2.y))
                                 val minPos = PositionManager.PositionDTO(min(pos1.x, pos2.x), min(pos1.y, pos2.y))
 
