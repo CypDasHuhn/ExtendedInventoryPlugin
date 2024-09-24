@@ -1,25 +1,19 @@
-import de.cypdashuhn.extendedInventoryPlugin.Main
-import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
-import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.simulator.Simulator
-import de.cypdashuhn.rooster.util.createItem
-import org.bukkit.Material
-import org.jetbrains.exposed.sql.transactions.transaction
+import demo.TestData
+import demo.TestDataManager
 
 fun main() {
     val playerManager = PlayerManager()
     Rooster.localeProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
     Simulator.startSimulator { player ->
-        transaction {
-            PositionManager.Position.new {
-                x = 0
-                y = 0
-                ownerId = player.dbPlayer()
-                item = Main.itemManager.upsertItem(createItem(Material.STONE_SWORD))
-            }
+        val possibleColors = listOf("red", "green", "blue", "yellow", "lime", "purple")
+        repeat(50) {
+            val randomColor = possibleColors.random()
+
+            TestDataManager.addTestData(TestData(0, "testName$it", randomColor))
         }
     }
 }

@@ -42,7 +42,7 @@ fun Player.toggleItemMode() {
 
 const val ROOSTER_PLAYER_INVENTORY_CACHE_KEY = "ROOSTER_PLAYER_INVENTORY_CACHE_KEY"
 fun CommandSender.setCachedPlayerInventory(items: Array<ItemStack>) {
-    cache.set(ROOSTER_PLAYER_INVENTORY_CACHE_KEY, this, items)
+    cache.put(ROOSTER_PLAYER_INVENTORY_CACHE_KEY, this, items)
 }
 
 fun getCachedPlayerInventory(): Array<ItemStack> {

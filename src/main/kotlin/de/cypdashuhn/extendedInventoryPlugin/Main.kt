@@ -47,6 +47,24 @@ class Main : JavaPlugin() {
                     ownerId = event.player.dbPlayer()
                     item = itemManager.upsertItem(createItem(Material.STONE_SWORD))
                 }
+                PositionManager.Position.new {
+                    x = -2
+                    y = 1
+                    ownerId = event.player.dbPlayer()
+                    item = itemManager.upsertItem(createItem(Material.ACACIA_LOG))
+                }
+                PositionManager.Position.new {
+                    x = 8
+                    y = 4
+                    ownerId = event.player.dbPlayer()
+                    item = itemManager.upsertItem(createItem(Material.REDSTONE))
+                }
+                PositionManager.Position.new {
+                    x = -1
+                    y = -3
+                    ownerId = event.player.dbPlayer()
+                    item = itemManager.upsertItem(createItem(Material.GLOWSTONE))
+                }
             }
         }
         Rooster.localeProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")

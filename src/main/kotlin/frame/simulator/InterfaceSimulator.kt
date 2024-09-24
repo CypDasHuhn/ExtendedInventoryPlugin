@@ -1,5 +1,6 @@
 package de.cypdashuhn.rooster.simulator
 
+import be.seeseemelk.mockbukkit.inventory.ChestInventoryMock
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.ui.Click
 import de.cypdashuhn.rooster.ui.Context
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryAction
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryView
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
@@ -133,6 +135,7 @@ object InterfaceSimulator {
 
 
     fun colorFromShort(short: String): String {
+        if (short == "AIR") return ""  // No color for "AIR"
         val hash = short.hashCode()
         val colorCode = (hash % 6) + 31 // ANSI color codes from 31 to 36 for red, green, yellow, blue, magenta, cyan
         return "\u001B[${colorCode}m"  // ANSI escape code
@@ -146,8 +149,14 @@ object InterfaceSimulator {
         if (inventory.type == InventoryType.CHEST) {
             val rows = inventory.contents.size / 9
 
-            println("# ${inventory.name} #")
+            val inventoryName = Simulator.interfaceName
+            var missingChars = 55 - inventoryName.length
+            repeat(missingChars/2) { print("#") }
+            print("# $inventoryName #")
+            repeat(missingChars/2) { print("#") }
+            println("")
             for (row in 0 until rows) {
+                print("# ")
                 for (slot in 0 until 9) {
                     val item = inventory.getItem(slot + row * 9) ?: createItem(Material.AIR)
                     val short = item.type.short()
@@ -155,8 +164,10 @@ object InterfaceSimulator {
                     val reset = resetColor()
                     print("${color}[$short]${reset} ")  // print the colored brackets and reset after each item
                 }
+                print(" #")
                 println("")
             }
+            println("#".repeat(58))
         }
     }
 

@@ -8,6 +8,7 @@ import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.localization.tComponent
+import de.cypdashuhn.rooster.simulator.Simulator
 import de.cypdashuhn.rooster.ui.Context
 import de.cypdashuhn.rooster.ui.InterfaceInfo
 import de.cypdashuhn.rooster.ui.RoosterInterface
@@ -36,6 +37,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
     private const val REGION_SHIFT_CACHE_POS2 = "region_shift_pos2"
 
     override fun getInventory(player: Player, context: ItemInterfaceContext): Inventory {
+        Simulator.interfaceName = "Item Interface #${context.position.x}-${context.position.y}"
         return Bukkit.createInventory(null, 6 * 9, "Item Interface #${context.position.x}-${context.position.y}")
     }
 
@@ -85,14 +87,14 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                         event.isCancelled = true
                         when (context.regionShiftMode) {
                             RegionShiftMode.START -> {
-                                cache.set(REGION_SHIFT_CACHE_POS1, click.player, slotToPosition(click.slot, context)!!)
+                                cache.put(REGION_SHIFT_CACHE_POS1, click.player, slotToPosition(click.slot, context)!!)
                                 openInventory(click.player, context.also {
                                     it.regionShiftMode = RegionShiftMode.POS1_SELECTED
                                 })
                             }
 
                             RegionShiftMode.POS1_SELECTED -> {
-                                cache.set(REGION_SHIFT_CACHE_POS2, click.player, slotToPosition(click.slot, context)!!)
+                                cache.put(REGION_SHIFT_CACHE_POS2, click.player, slotToPosition(click.slot, context)!!)
                                 openInventory(click.player, context.also {
                                     it.regionShiftMode = RegionShiftMode.POS2_SELECTED
                                 })
@@ -161,7 +163,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                             map[pos] = event.inventory.getItem(i)
                         }
 
-                        cache.set(MOVED_ITEMS_CACHE_KEY, click.player, map)
+                        cache.put(MOVED_ITEMS_CACHE_KEY, click.player, map)
                     }
 
                     if (event.hasClicks(ClickState.LEFT_NORMAL_CLICK)) context.position.x--

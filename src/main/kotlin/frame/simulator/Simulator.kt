@@ -101,6 +101,16 @@ object Simulator {
             }
         }
 
+    var interfaceName: String
+        get() {
+            return values["interfaceName"] as String? ?: ""
+        }
+        set(interfaceName: String) {
+            onlyTest {
+                values["interfaceName"] = interfaceName
+            }
+        }
+
     fun printValues() {
         println("values: ")
         values.forEach { (key, value) ->

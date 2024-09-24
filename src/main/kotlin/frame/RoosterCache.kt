@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.math.sign
 
 class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
     private var cache: Cache<Pair<String, K>, V> = cacheBuilder.build()
@@ -34,7 +35,7 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
         }, clearTime, unit)
     }
 
-    fun set(
+    fun put(
         key: K,
         sender: CommandSender? = null,
         value: V,
@@ -59,5 +60,22 @@ class RoosterCache<K, V>(cacheBuilder: CacheBuilder<Any, Any>) {
 
         if (clearTime != null && unit != null) invalidateWithTimeout(key, sender, clearTime, unit)
         return cache.get(typeKey to key, provider) as T
+    }
+
+    fun size() = cache.size()
+    fun asMap() = cache.asMap()
+    fun addAll(
+        map: Map<K, V>,
+        sender: CommandSender? = null,
+        clearTime: Long? = null,
+        unit: TimeUnit? = null
+    ) {
+        map.forEach { (key, value) -> put(key, sender, value, clearTime, unit) }
+    }
+    fun cleanUp() = cache.cleanUp()
+    fun getAllPresent(keys: Iterable<K>, sender: CommandSender?) {
+        cache.getAllPresent(keys.map {
+            (sender?.uniqueKey() ?: generalKey) to it
+        })
     }
 }

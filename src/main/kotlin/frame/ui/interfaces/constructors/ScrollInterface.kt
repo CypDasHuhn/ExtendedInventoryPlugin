@@ -11,15 +11,16 @@ import de.cypdashuhn.rooster.ui.items.ItemStackCreator
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
-abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any>(
+abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, DataType : Any>(
     override val interfaceName: String,
-    override val contextClass: KClass<T>,
+    override val contextClass: KClass<ContextType>,
     var scrollDirection: ScrollDirection = ScrollDirection.TOP_BOTTOM,
     override var contentArea: Pair<Pair<Int, Int>, Pair<Int, Int>> = (0 to 0) to (8 to 5)
-) : IndexedContentInterface<T, Int, DataType>(interfaceName, contextClass, contentArea) {
+) : IndexedContentInterface<ContextType, Int, DataType>(interfaceName, contextClass, contentArea) {
     enum class ScrollDirection {
         TOP_BOTTOM,
         LEFT_RIGHT
@@ -32,9 +33,12 @@ abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any
     private val rowSize: Int
         get() = if (scrollDirection == ScrollDirection.LEFT_RIGHT) contentXWidth else contentYWidth
 
-    abstract fun contentCreator(data: DataType): Pair<ItemStack, (ClickInfo<T>) -> Unit>
+    abstract override fun getInventory(player: Player, context: ContextType): Inventory
+    abstract override fun defaultContext(player: Player): ContextType
 
-    private fun contentItem() = InterfaceItem<T>(
+    abstract fun contentCreator(data: DataType): Pair<ItemStack, (ClickInfo<ContextType>) -> Unit>
+
+    private fun contentItem() = InterfaceItem<ContextType>(
         condition = {
             if (offset(it.slot) != null) return@InterfaceItem false
 
@@ -52,7 +56,7 @@ abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any
         }
     )
 
-    private fun clickInArea() = InterfaceItem<T>(
+    private fun clickInArea() = InterfaceItem<ContextType>(
         condition = {
             if (offset(it.slot) != null) return@InterfaceItem false
             val dataExists = dataFromPosition(it.slot, it.context, it.player) != null
@@ -63,7 +67,7 @@ abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any
         priority = { -1 }
     )
 
-    private fun scroller() = ContextModifierItem<T>(
+    private fun scroller() = ContextModifierItem<ContextType>(
         condition = Condition(5 * 9 + 8),
         itemStack = ItemStackCreator(Material.COMPASS),
         contextModifier = { clickInfo ->
@@ -72,18 +76,20 @@ abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any
                 if (clickInfo.event.hasClicks(ClickState.LEFT_CLICK)) scrollAmount *= -1
 
                 context.position += scrollAmount
+                if (context.position < 0) context.position = 0
             }
         }
     )
 
-    open fun modifiedContentItem(item: InterfaceItem<T>): InterfaceItem<T> = item
-    open fun clickInArea(item: InterfaceItem<T>): InterfaceItem<T> = item
-    abstract fun getOtherItems(): List<InterfaceItem<T>>
+    open fun modifiedContentItem(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
+    open fun clickInArea(item: InterfaceItem<ContextType>): InterfaceItem<ContextType> = item
+    abstract fun getOtherItems(): List<InterfaceItem<ContextType>>
 
-    final override fun getInterfaceItems(): List<InterfaceItem<T>> {
+    final override fun getInterfaceItems(): List<InterfaceItem<ContextType>> {
         val list = mutableListOf(
             modifiedContentItem(contentItem()),
             clickInArea(clickInArea()),
+            scroller()
         )
 
         list.addAll(getOtherItems())
@@ -92,7 +98,7 @@ abstract class ScrollInterface<T : ScrollInterface.ScrollContext, DataType : Any
     }
 
 
-    override fun slotToId(slot: Slot, context: T, player: Player): Int? {
+    override fun slotToId(slot: Slot, context: ContextType, player: Player): Int? {
         val (x, y) = offset(slot) ?: return null
         return if (scrollDirection == ScrollDirection.LEFT_RIGHT)
             x + (y + context.position) * contentYWidth

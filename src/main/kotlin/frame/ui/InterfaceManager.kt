@@ -36,7 +36,7 @@ object InterfaceManager {
      * of the interface ([context]).
      */
     fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T) {
-        cache.set(CHANGES_INTERFACE_KEY, player, true)
+        cache.put(CHANGES_INTERFACE_KEY, player, true)
 
         playerInterfaceMap[player] = targetInterface.interfaceName
 

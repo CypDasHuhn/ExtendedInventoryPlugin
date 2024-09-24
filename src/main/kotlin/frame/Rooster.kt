@@ -129,7 +129,8 @@ object Rooster {
                         }
                         instances.add(instance)
                     } catch (ex: Throwable) {
-                        println("Could not load class: ${classInfo.name}, exception: ${ex.message}")
+                        println("Could not load class: ${classInfo.name}, exception: ")
+                        ex.printStackTrace()
                     }
                 }
             }

@@ -19,7 +19,7 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
     }
 
     object PlayerLanguages : IntIdTable("RoosterLocalization") {
-        val playerUUID = varchar("player_uuid", 50)
+        val playerUUID = varchar("player_uuid", 50).nullable()
         val language = varchar("language", 50)
     }
 
@@ -50,15 +50,22 @@ class DatabaseLocaleProvider(override var locales: List<Language>, override var 
 
     private val globalLanguageKey = "global_language"
     override fun getGlobalLanguage(): Language {
-        return plugin.config.getString(globalLanguageKey)?.let {
-            it
-        } ?: defaultLocale.also { changeGlobalLanguage(defaultLocale) }
+        return transaction { PlayerLanguage.findEntry(PlayerLanguages.playerUUID eq null)?.language ?: defaultLocale.also {
+            changeGlobalLanguage(defaultLocale)
+        } }
     }
 
     override fun changeGlobalLanguage(language: Language) {
-        val fileConfiguration = plugin.config
-        fileConfiguration.set(globalLanguageKey, language)
-        plugin.saveConfig()
+        transaction {
+            val existingEntry = PlayerLanguage.find { PlayerLanguages.playerUUID eq null }.firstOrNull()
+            if (existingEntry != null) {
+                existingEntry.language = language
+            } else {
+                PlayerLanguage.new {
+                    playerUUID = null
+                    this.language = language
+                }
+            }
+        }
     }
-
 }

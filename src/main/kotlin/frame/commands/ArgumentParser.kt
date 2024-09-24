@@ -177,7 +177,7 @@ object ArgumentParser {
             }
 
             // Only invoked if it's the last element
-            cache.set(
+            cache.put(
                 CACHE_KEY,
                 sender,
                 CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow),

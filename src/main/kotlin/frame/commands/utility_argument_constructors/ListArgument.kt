@@ -125,7 +125,7 @@ object ListArgument {
 
                     val entries = query.where { condition }
 
-                    cache.set(LIST_FILTERED_CACHE_KEY, sender, DBCacheInfo(entries, arg), 5 * 1000)
+                    cache.put(LIST_FILTERED_CACHE_KEY, sender, DBCacheInfo(entries, arg), 5 * 1000)
 
                     entity.wrapRows(entries)
                 }
