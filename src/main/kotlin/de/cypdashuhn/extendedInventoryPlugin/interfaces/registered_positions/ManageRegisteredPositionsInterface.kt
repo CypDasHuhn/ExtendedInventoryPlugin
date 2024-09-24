@@ -1,14 +1,14 @@
 package interfaces.registered_positions
 
-import de.cypdashuhn.rooster.util.createItem
 import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import de.cypdashuhn.rooster.localization.tComponent
-import de.cypdashuhn.rooster.ui.Context
-import de.cypdashuhn.rooster.ui.RoosterInterface
+import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
+import de.cypdashuhn.rooster.util.createItem
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.Material

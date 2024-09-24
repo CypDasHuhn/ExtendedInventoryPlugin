@@ -9,10 +9,10 @@ import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.localization.tComponent
 import de.cypdashuhn.rooster.simulator.Simulator
-import de.cypdashuhn.rooster.ui.Context
-import de.cypdashuhn.rooster.ui.InterfaceInfo
-import de.cypdashuhn.rooster.ui.RoosterInterface
+import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
+import de.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.util.createItem
 import interfaces.ItemInterface.ItemInterfaceContext
