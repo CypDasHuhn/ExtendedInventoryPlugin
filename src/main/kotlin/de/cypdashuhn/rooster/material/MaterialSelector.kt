@@ -1,19 +1,15 @@
 package de.cypdashuhn.rooster.material
 
-import de.cypdashuhn.rooster.util.and
-import de.cypdashuhn.rooster.util.or
+import de.cypdashuhn.rooster.util.PredicateCombinator
+import de.cypdashuhn.rooster.util.andR
+import de.cypdashuhn.rooster.util.andNotR
+import de.cypdashuhn.rooster.util.orR
 import org.bukkit.Material
 
-enum class SelectorType(val selector: (Pair<((Material) -> Boolean), MaterialGroup>) -> (Material) -> Boolean) {
-    INCLUDE({ (condition, materialGroup) ->
-        condition or materialGroup.materialSelector
-    }),
-    EXCLUDE({ (condition, materialGroup) ->
-        condition and { !materialGroup.materialSelector(it) }
-    }),
-    REQUIRE({ (condition, materialGroup) ->
-        condition and materialGroup.materialSelector
-    })
+enum class SelectorType(val combinator: PredicateCombinator<Material>) {
+    INCLUDE(::orR),
+    EXCLUDE(::andNotR),
+    REQUIRE(::andR)
 }
 
 class MaterialSelector {
@@ -26,8 +22,20 @@ class MaterialSelector {
             }
         }
 
-        fun get() {
+        fun get(vararg filter: Pair<SelectorType, MaterialGroup>): List<Material> {
+            if (filter.isEmpty()) { return Material.entries.toList() }
 
+            val filterList = filter.toList()
+
+            var condition: ((Material) -> Boolean)? = null
+
+            filterList.forEach { (selector, materialGroup) ->
+                if (condition == null) {
+                    condition = { false }
+                }
+                condition = selector.combinator(condition!!, materialGroup.materialSelector)
+            }
+            return Material.entries.filter(condition!!)
         }
     }
 

@@ -71,14 +71,6 @@ fun Location.value(axis: Axis): Double {
     }
 }
 
-infix fun <T> ((T) -> Boolean).and(other: (T) -> Boolean): (T) -> Boolean {
-    return { t: T -> this(t) && other(t) }
-}
-
-infix fun <T> ((T) -> Boolean).or(other: (T) -> Boolean): (T) -> Boolean {
-    return { t: T -> this(t) || other(t) }
-}
-
 // looking into whether manipulating by reference would be possible
 /* infix fun <T> ((T) -> Boolean).add(other: (T) -> Boolean) {
     this = { t: T -> this(t) || other(t) }
