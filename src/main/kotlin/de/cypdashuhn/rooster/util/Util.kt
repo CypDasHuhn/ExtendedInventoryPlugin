@@ -4,11 +4,7 @@ import net.kyori.adventure.text.TextComponent
 import org.bukkit.Axis
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.command.BlockCommandSender
-import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.entity.Player
-import org.bukkit.entity.minecart.CommandMinecart
 import org.bukkit.inventory.ItemStack
 
 fun List<Location>.nearest(location: Location): Location {
@@ -17,15 +13,6 @@ fun List<Location>.nearest(location: Location): Location {
 
 fun List<Player>.nearest(location: Location): Player {
     return this.map { Pair(it, it.location.distance(location)) }.minByOrNull { it.second }!!.first
-}
-
-fun CommandSender.location(): Location? {
-    return when (this) {
-        is Player -> this.location
-        is BlockCommandSender -> this.block.location
-        is CommandMinecart -> this.location
-        else -> null
-    }
 }
 
 fun createItem(
@@ -68,21 +55,5 @@ fun Location.value(axis: Axis): Double {
         Axis.X -> this.x
         Axis.Y -> this.y
         Axis.Z -> this.z
-    }
-}
-
-// looking into whether manipulating by reference would be possible
-/* infix fun <T> ((T) -> Boolean).add(other: (T) -> Boolean) {
-    this = { t: T -> this(t) || other(t) }
-}*/
-
-fun Player.uuid() = this.uniqueId.toString()
-
-fun CommandSender.uniqueKey(): String {
-    return when (this) {
-        is Player -> this.uniqueId.toString()
-        is ConsoleCommandSender -> "console"
-        is BlockCommandSender -> "${this.block.location.toVector()}"
-        else -> "unknown-${this::class.simpleName}"
     }
 }

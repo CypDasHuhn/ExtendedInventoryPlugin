@@ -1,8 +1,8 @@
 package de.cypdashuhn.rooster.material
 
 import de.cypdashuhn.rooster.util.PredicateCombinator
-import de.cypdashuhn.rooster.util.andR
 import de.cypdashuhn.rooster.util.andNotR
+import de.cypdashuhn.rooster.util.andR
 import de.cypdashuhn.rooster.util.orR
 import org.bukkit.Material
 
@@ -23,7 +23,9 @@ class MaterialSelector {
         }
 
         fun get(vararg filter: Pair<SelectorType, MaterialGroup>): List<Material> {
-            if (filter.isEmpty()) { return Material.entries.toList() }
+            if (filter.isEmpty()) {
+                return Material.entries.toList()
+            }
 
             val filterList = filter.toList()
 
@@ -58,9 +60,13 @@ class MaterialSelector {
         return MaterialSelector(currentMaterials)
     }
 
-    fun exclude(group: MaterialGroup): MaterialSelector {
-        val currentMaterials = materials
-        materials.removeAll(Material.entries.toTypedArray().filter(group.materialSelector))
+    fun exclude(vararg groups: MaterialGroup): MaterialSelector {
+        val currentMaterials = materials.map { it }.toMutableList()
+
+        groups.forEach {
+            currentMaterials.removeAll(Material.entries.toTypedArray().filter(it.materialSelector))
+        }
+
         return MaterialSelector(currentMaterials)
     }
 

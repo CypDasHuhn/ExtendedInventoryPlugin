@@ -25,18 +25,18 @@ class Main : JavaPlugin() {
         val playerAttributeManager = PlayerAttributeManager()
     }
 
-    val playerTestKey = AttributeKey.boolean("test")
-    val playerTestKeyTwo = AttributeKey.customNullable<Int?>("newTest")
+    val playerBoolKey = AttributeKey.boolean("test")
+    val playerNullableIntKey = AttributeKey.customNullable<Int?>("newTest")
 
     override fun onEnable() {
         Rooster.playerJoin = { event ->
             event.player.insertStateIfMissing()
 
-            playerAttributeManager.set(event.player, playerTestKey, true)
-            playerAttributeManager.set(event.player, playerTestKeyTwo, 4)
+            playerAttributeManager.set(event.player, playerBoolKey, true)
+            playerAttributeManager.set(event.player, playerNullableIntKey, 4)
 
-            val attribute = playerAttributeManager.get(event.player, playerTestKey)
-            val attributeTwo = playerAttributeManager.getNullable(event.player, playerTestKeyTwo)
+            val attribute = playerAttributeManager.get(event.player, playerBoolKey)
+            val attributeTwo = playerAttributeManager.getNullable(event.player, playerNullableIntKey)
 
             println("$attribute and $attributeTwo")
 
