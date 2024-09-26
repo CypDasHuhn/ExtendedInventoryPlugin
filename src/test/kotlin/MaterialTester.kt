@@ -1,14 +1,17 @@
 import de.cypdashuhn.rooster.material.MaterialGroup
 import de.cypdashuhn.rooster.material.MaterialSelector
-import de.cypdashuhn.rooster.material.SelectorType
 
 fun main() {
-    var m = MaterialSelector.get(
-        SelectorType.INCLUDE to MaterialGroup.IS_BRICK,
-        SelectorType.REQUIRE to MaterialGroup.IS_SANDY_BLOCK
-    )
+    val element = MaterialSelector(MaterialGroup.MINERAL)
+    val all = element.get()
+    val withoutOre = element.exclude(MaterialGroup.ORE).get()
+    val withoutBlocks = element.exclude(
+        MaterialGroup.ORE,
+        MaterialGroup.MATERIAL_BLOCK,
+        MaterialGroup.LEGACY
+    ).get()
 
-    var l = MaterialSelector(MaterialGroup.IS_BRICK).include(MaterialGroup.IS_RED).get()
+    val s = element.require(MaterialGroup.ARMOR).get()
 
     println("")
 }
