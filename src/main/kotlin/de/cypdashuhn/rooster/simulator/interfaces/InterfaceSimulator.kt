@@ -42,7 +42,7 @@ object InterfaceSimulator {
         CONTEXT_NOT_FITTING
     }
 
-    fun parseOpening(command: String, player: Player) {
+    fun parseOpening(command: String) {
         val interfaceName = command.split(" ").first()
 
         val targetInterface =
@@ -57,7 +57,9 @@ object InterfaceSimulator {
         var contextCommand: String? = command.drop(interfaceName.length + 1).trim()
         if (contextCommand?.isEmpty() != false) contextCommand = null
 
-        openInterface(targetInterface, contextCommand, player)
+        requireNotNull(Simulator.player) { "Simulator not initialized" }
+
+        openInterface(targetInterface, contextCommand, Simulator.player!!)
     }
 
     fun openInterface(
@@ -86,7 +88,7 @@ object InterfaceSimulator {
         return OpenInterfaceResults.OK
     }
 
-    fun parseShow(command: String, player: Player) {
+    fun parseShow(command: String) {
         var slot = parseSlot(command) ?: return
 
         if (Simulator.currentInventory == null) {
@@ -104,7 +106,7 @@ object InterfaceSimulator {
         item.serialize().forEach { println(it) }
     }
 
-    fun parseClick(command: String, player: Player) {
+    fun parseClick(command: String) {
         var slot = parseSlot(command) ?: return
 
         if (Simulator.currentInventory == null) {
@@ -119,17 +121,19 @@ object InterfaceSimulator {
 
         val clickState = parseClickState(command) ?: return
 
-        player.openInventory(Simulator.currentInventory!!)
+        requireNotNull(Simulator.player) { "Simulator not initialized" }
+
+        Simulator.player!!.openInventory(Simulator.currentInventory!!)
         val event = InventoryClickEvent(
-            player.openInventory,
+            Simulator.player!!.openInventory,
             InventoryType.SlotType.CONTAINER,
             slot,
             clickState,
             InventoryAction.NOTHING
         )
         val item = Simulator.currentInventory!!.getItem(slot)
-        val click = Click(event, player, item, item?.type, event.slot)
-        InterfaceManager.click(click, event, Simulator.currentInterface!!, player)
+        val click = Click(event, Simulator.player!!, item, item?.type, event.slot)
+        InterfaceManager.click(click, event, Simulator.currentInterface!!, Simulator.player!!)
     }
 
 

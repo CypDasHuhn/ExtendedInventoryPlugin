@@ -108,15 +108,10 @@ object ArgumentParser {
 
         val values: HashMap<String, Any?> = HashMap()
 
-        var positionsWentThrough = 0
-
         for ((index, stringArgument) in stringArguments.withIndex()) {
             if (cachePosition != null && cachePosition > index) {
                 continue
             }
-
-            positionsWentThrough += 1
-            println("Positions Went through: $positionsWentThrough")
 
             val argumentInfo = ArgumentInfo(sender, stringArguments, stringArgument, index, values)
             val cacheInfo = CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow)

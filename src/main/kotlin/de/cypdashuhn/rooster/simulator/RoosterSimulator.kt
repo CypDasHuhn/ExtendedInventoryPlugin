@@ -1,12 +1,30 @@
 package de.cypdashuhn.rooster.simulator
 
+import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.RoosterShell
+import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
 abstract class RoosterSimulator : RoosterShell {
-    fun start() {
-        Simulator.startSimulator(this)
+    fun startTerminal() {
+        Simulator.initializeSimulator(this)
+
+        Simulator.startTerminal()
     }
 
-    final override fun initializeRooster(plugin: JavaPlugin) = super.initializeRooster(plugin)
+    fun simulate(preserveFolder: Boolean = false, actionBlock: (Player) -> Unit) {
+        val player = Simulator.initializeSimulator(this)
+
+        actionBlock(player)
+        if (!preserveFolder) Simulator.deleteMockDirectory()
+    }
+
+    final override fun initializeRooster(plugin: JavaPlugin) {
+        super.initializeRooster(plugin)
+        val directoryPath = Rooster.plugin.dataFolder.absolutePath
+        val clickablePath =
+            "file:///$directoryPath".replace("\\", "/") // Ensure the format is proper for clickable URLs
+        println("Current Mock Directory: $clickablePath")
+    }
+
 }

@@ -2,11 +2,12 @@ package de.cypdashuhn.rooster.simulator
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.Rooster
-import de.cypdashuhn.rooster.simulator.commands.CommandSimulator
+import de.cypdashuhn.rooster.simulator.commands.CommandSimulatorHandler
 import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import net.kyori.adventure.text.Component
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
 
@@ -14,8 +15,9 @@ object Simulator {
     var currentInventory: Inventory? = null
     var currentContext: Context? = null
     var currentInterface: Interface<Context>? = null
+    var player: Player? = null
 
-    fun startSimulator(roosterSimulator: RoosterSimulator) {
+    fun initializeSimulator(roosterSimulator: RoosterSimulator): Player {
         isSimulating = true
 
         val server = MockBukkit.mock()
@@ -35,50 +37,78 @@ object Simulator {
         Rooster.playerManager?.playerLogin(player)
         roosterSimulator.onPlayerJoin(event)
 
+        this.player = player
+        return player
+    }
+
+    fun command(input: String): Pair<Boolean, Boolean> {
+        values.clear()
+
+        val command = input.split(" ").firstOrNull()
+        val args = input.substring((command?.length ?: -1) + 1)
+
+        try {
+            when (command) {
+                "exit" -> {
+                    println("Exiting the simulator.")
+                    return false to true
+                }
+
+                "exit-preserve" -> {
+                    return false to false
+                }
+
+                "complete" -> {
+                    CommandSimulatorHandler.completeCommandTerminal(args)
+                }
+
+                "invoke" -> {
+                    CommandSimulatorHandler.invokeCommandTerminal(args)
+                }
+
+                "open" -> {
+                    InterfaceSimulator.parseOpening(args)
+                }
+
+                "show" -> {
+                    InterfaceSimulator.parseShow(args)
+                }
+
+                "click" -> {
+                    InterfaceSimulator.parseClick(args)
+                }
+
+                else -> println("Unknown command: $input")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return true to false
+    }
+
+    fun startTerminal() {
         println("Welcome to the Input Simulator. Type commands to simulate input. Type 'exit' to quit.")
 
         while (true) {
             print("> ")
             val input = readlnOrNull() ?: continue
 
-            values.clear()
-
-            val command = input.split(" ").firstOrNull()
-            val args = input.substring((command?.length ?: -1) + 1)
-
-            try {
-                when (command) {
-                    "exit" -> {
-                        println("Exiting the simulator.")
-                        break
-                    }
-
-                    "complete" -> {
-                        CommandSimulator.commandComplete(args, player)
-                    }
-
-                    "invoke" -> {
-                        CommandSimulator.commandInvoke(args, player)
-                    }
-
-                    "open" -> {
-                        InterfaceSimulator.parseOpening(args, player)
-                    }
-
-                    "show" -> {
-                        InterfaceSimulator.parseShow(args, player)
-                    }
-
-                    "click" -> {
-                        InterfaceSimulator.parseClick(args, player)
-                    }
-
-                    else -> println("Unknown command: $input")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            val (continueCommand, deleteDirectory) = command(input)
+            if (!continueCommand) {
+                if (deleteDirectory) deleteMockDirectory()
+                break
             }
+        }
+    }
 
+    fun deleteMockDirectory() {
+        val mockDirectory = Rooster.plugin.dataFolder.parentFile
+
+        if (mockDirectory != null && mockDirectory.exists() && mockDirectory.isDirectory) {
+            mockDirectory.deleteRecursively()
+            println("Mock directory cleared: ${mockDirectory.absolutePath}")
+        } else {
+            println("Mock directory not found.")
         }
     }
 
