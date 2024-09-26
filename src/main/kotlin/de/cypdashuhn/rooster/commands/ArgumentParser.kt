@@ -1,5 +1,6 @@
 package de.cypdashuhn.rooster.commands
 
+import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.Rooster.cache
 import de.cypdashuhn.rooster.Rooster.rootArguments
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
@@ -88,10 +89,11 @@ object ArgumentParser {
         var cachePosition: Int? = null
         val cacheInfo = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
 
-        // TODO: Re-enable caching once thoroughly tested.
-        @Suppress("SENSELESS_COMPARISON")
-        if (cacheInfo != null && false) {
+        if (cacheInfo != null) {
             if (cacheInfo.stringArguments.withoutLast()
+                contentEquals
+                stringArguments.withoutLast() ||
+                cacheInfo.stringArguments
                 contentEquals
                 stringArguments.withoutLast()
             ) {
@@ -99,21 +101,27 @@ object ArgumentParser {
                 headArgument = cacheInfo.headArgument
                 errorArgumentOverflow = cacheInfo.errorArgumentOverflow
 
-                cachePosition = when (stringArguments.last().equals(stringArguments.withoutLast())) {
-                    true -> cacheInfo.stringArguments.size
-                    false -> cacheInfo.stringArguments.size - 1
+                cachePosition = when {
+                    stringArguments.last().isBlank() -> cacheInfo.stringArguments.size -1
+                    else ->  cacheInfo.stringArguments.size -1
                 }
             }
-
         }
 
         val values: HashMap<String, Any?> = HashMap()
 
+        var positionsWentThrough = 0
+
         for ((index, stringArgument) in stringArguments.withIndex()) {
-            @Suppress("SENSELESS_COMPARISON")
-            if (cachePosition != null && cachePosition < index) continue
+            if (cachePosition != null && cachePosition > index) {
+                continue
+            }
+
+            positionsWentThrough += 1
+            println("Positions Went through: $positionsWentThrough")
 
             val argumentInfo = ArgumentInfo(sender, stringArguments, stringArgument, index, values)
+            val cacheInfo = CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow)
 
             val currentTabCompletions: () -> List<String> = {
                 arguments
@@ -124,6 +132,8 @@ object ArgumentParser {
             val currentArgument = arguments.firstOrNull { arg -> arg.isArgument(argumentInfo) }
                 ?: when (commandParseType) { // Null Handling
                     CommandParseType.TabCompleter -> {
+                        cacheCommand(sender, cacheInfo)
+
                         return ReturnResult(currentTabCompletions())
                     }
 
@@ -177,13 +187,9 @@ object ArgumentParser {
             }
 
             // Only invoked if it's the last element
-            cache.put(
-                CACHE_KEY,
-                sender,
-                CacheInfo(stringArguments, arguments, headArgument, errorArgumentOverflow),
-                5,
-                TimeUnit.SECONDS
-            )
+            cacheCommand(sender, cacheInfo)
+
+            val test = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
 
             when (commandParseType) {
                 CommandParseType.TabCompleter -> {
@@ -231,5 +237,16 @@ object ArgumentParser {
             }
         }
         return errorWithoutInfo
+    }
+
+    private fun cacheCommand(sender: CommandSender, cacheInfo: CacheInfo) {
+        cache.put(
+            CACHE_KEY,
+            sender,
+            cacheInfo,
+        )
+
+        val test = cache.getIfPresent(CACHE_KEY, sender)
+        println(test)
     }
 }
