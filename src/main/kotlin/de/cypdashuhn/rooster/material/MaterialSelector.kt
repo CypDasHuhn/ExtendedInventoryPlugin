@@ -22,59 +22,69 @@ class MaterialSelector {
             }
         }
 
-        fun get(vararg filter: Pair<SelectorType, MaterialGroup>): List<Material> {
-            if (filter.isEmpty()) {
-                return Material.entries.toList()
-            }
-
-            val filterList = filter.toList()
-
-            var condition: ((Material) -> Boolean)? = null
-
-            filterList.forEach { (selector, materialGroup) ->
-                if (condition == null) {
-                    condition = { false }
-                }
-                condition = selector.combinator(condition!!, materialGroup.materialSelector)
-            }
-            return Material.entries.filter(condition!!)
+        fun get(vararg filter: Pair<SelectorType, MaterialGroup>) {
+            MaterialSelector().get(*filter)
         }
     }
 
-    private var materials = mutableListOf<Material>()
+    private var materialFilter: List<Pair<SelectorType, MaterialGroup>>
+    private var excludeLegacy: Boolean
 
-    constructor()
+    constructor(excludeLegacy: Boolean = true) {
+        this.materialFilter = listOf()
+        this.excludeLegacy = excludeLegacy
+    }
 
-    private constructor(materials: List<Material>) {
-        this.materials = materials.toMutableList()
+    private constructor(materialFilter: List<Pair<SelectorType, MaterialGroup>>, excludeLegacy: Boolean) {
+        this.materialFilter = materialFilter
+        this.excludeLegacy = excludeLegacy
     }
 
 
-    constructor(group: MaterialGroup) {
-        materials.addAll(Material.entries.toTypedArray().filter(group.materialSelector))
+    constructor(group: MaterialGroup, excludeLegacy: Boolean = true) {
+        this.materialFilter = listOf(SelectorType.INCLUDE to group)
+        this.excludeLegacy = excludeLegacy
     }
 
-    fun include(group: MaterialGroup): MaterialSelector {
-        val currentMaterials = materials
-        materials.addAll(Material.entries.toTypedArray().filter(group.materialSelector))
-        return MaterialSelector(currentMaterials)
+    fun include(vararg groups: MaterialGroup): MaterialSelector = addFilter(SelectorType.INCLUDE, *groups)
+    fun exclude(vararg groups: MaterialGroup): MaterialSelector = addFilter(SelectorType.EXCLUDE, *groups)
+    fun require(vararg groups: MaterialGroup): MaterialSelector = addFilter(SelectorType.REQUIRE, *groups)
+
+    fun addFilter(selectorType: SelectorType, group: MaterialGroup): MaterialSelector {
+        val materialFilterCopy = this.materialFilter.map { it.copy() }.toMutableList()
+        materialFilterCopy.add(selectorType to group)
+        return MaterialSelector(materialFilterCopy, this.excludeLegacy)
     }
 
-    fun exclude(vararg groups: MaterialGroup): MaterialSelector {
-        val currentMaterials = materials.map { it }.toMutableList()
+    fun addFilter(vararg filters: Pair<SelectorType, MaterialGroup>): MaterialSelector {
+        val materialFilterCopy = this.materialFilter.map { it.copy() }.toMutableList()
+        materialFilterCopy.addAll(filters)
+        return MaterialSelector(materialFilterCopy, this.excludeLegacy)
+    }
 
-        groups.forEach {
-            currentMaterials.removeAll(Material.entries.toTypedArray().filter(it.materialSelector))
+    fun addFilter(selectorType: SelectorType, vararg groups: MaterialGroup): MaterialSelector {
+        val filters = groups.toList().map { selectorType to it }
+        return addFilter(*filters.toTypedArray())
+    }
+
+    fun get(vararg filter: Pair<SelectorType, MaterialGroup>): List<Material> {
+        if (filter.isEmpty()) {
+            return Material.entries.toList()
         }
 
-        return MaterialSelector(currentMaterials)
-    }
+        val filterList = filter.toList()
 
-    fun require(group: MaterialGroup): MaterialSelector {
-        val currentMaterials = materials
-        materials.retainAll(Material.entries.toTypedArray().filter(group.materialSelector))
-        return MaterialSelector(currentMaterials)
-    }
+        var condition: ((Material) -> Boolean)? = null
 
-    fun get(): List<Material> = materials
+        filterList.forEach { (selector, materialGroup) ->
+            if (condition == null) {
+                condition = { false }
+            }
+            condition = selector.combinator(condition!!, materialGroup.materialSelector)
+        }
+        if (excludeLegacy) {
+            condition = SelectorType.EXCLUDE.combinator(condition!!, MaterialGroup.LEGACY.materialSelector)
+        }
+        return Material.entries.filter(condition!!)
+    }
 }
