@@ -1,7 +1,8 @@
 package de.cypdashuhn.rooster_demo.interfaces.page
 
-import de.cypdashuhn.rooster.database.RoosterTable
-import de.cypdashuhn.rooster_demo.interfaces.DemoDatabase
+import de.cypdashuhn.rooster_demo.interfaces.DemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoTable
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -9,9 +10,11 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 
 data class PageData(val name: String, val color: String, val page: Int, val pos: Pair<Int, Int>)
-object PageDataManager : DemoDatabase() {
 
-    @RoosterTable
+@RoosterDemoManager
+object PageDataManager : DemoManager() {
+
+    @RoosterDemoTable
     object PageTable : IntIdTable("RoosterTestPageData") {
         val name = varchar("name", 255)
         val color = varchar("color", 255)
@@ -50,6 +53,8 @@ object PageDataManager : DemoDatabase() {
     }
 
     override fun demoPrep() {
+        if (PageTable.selectAll().count().toInt() > 0) return
+
         repeat(50) {
             val randomColor = listOf("red", "green", "blue", "yellow", "lime", "purple").random()
             val randomPage = (1..5).random()

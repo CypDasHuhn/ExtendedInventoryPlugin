@@ -1,8 +1,9 @@
-package de.cypdashuhn.rooster.simulator
+package de.cypdashuhn.rooster.simulator.commands
 
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.commands.ArgumentParser
 import de.cypdashuhn.rooster.commands.Completer.withStarting
+import de.cypdashuhn.rooster.simulator.Simulator
 import org.bukkit.entity.Player
 
 object CommandSimulator {
@@ -34,7 +35,7 @@ object CommandSimulator {
     fun command(command: String, type: ArgumentParser.CommandParseType, player: Player): ArgumentParser.ReturnResult {
         val (label, args) = commandTokenized(command)
 
-        if (!Rooster.rootArguments.any { it.label == label }) {
+        if (!Rooster.registeredRootArguments.any { it.label == label }) {
             println("Unknown command: $command")
             return ArgumentParser.ReturnResult()
         }

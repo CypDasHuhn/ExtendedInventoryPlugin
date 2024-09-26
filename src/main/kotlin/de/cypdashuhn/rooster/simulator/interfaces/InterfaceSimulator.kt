@@ -1,6 +1,7 @@
-package de.cypdashuhn.rooster.simulator
+package de.cypdashuhn.rooster.simulator.interfaces
 
 import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.simulator.Simulator
 import de.cypdashuhn.rooster.ui.interfaces.Click
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface

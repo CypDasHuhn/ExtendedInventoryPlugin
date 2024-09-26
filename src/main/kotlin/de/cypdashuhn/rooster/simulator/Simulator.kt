@@ -2,9 +2,12 @@ package de.cypdashuhn.rooster.simulator
 
 import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.simulator.commands.CommandSimulator
+import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
-import org.bukkit.entity.Player
+import net.kyori.adventure.text.Component
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.Inventory
 
 object Simulator {
@@ -12,17 +15,25 @@ object Simulator {
     var currentContext: Context? = null
     var currentInterface: Interface<Context>? = null
 
-    fun startSimulator(playerAction: (Player) -> Unit) {
+    fun startSimulator(roosterSimulator: RoosterSimulator) {
         isSimulating = true
 
         val server = MockBukkit.mock()
 
         val plugin = MockBukkit.createMockPlugin()
-        Rooster.initialize(plugin)
+
+        roosterSimulator.beforeInitialize()
+        Rooster.dynamicTables.addAll(Rooster.registeredDemoTables)
+        roosterSimulator.initializeRooster(plugin)
+
+        roosterSimulator.onInitialize()
 
         var player = server.addPlayer()
-        Rooster.playerManager!!.playerLogin(player)
-        playerAction(player)
+
+        val event = PlayerJoinEvent(player, Component.empty())
+        roosterSimulator.beforePlayerJoin(event)
+        Rooster.playerManager?.playerLogin(player)
+        roosterSimulator.onPlayerJoin(event)
 
         println("Welcome to the Input Simulator. Type commands to simulate input. Type 'exit' to quit.")
 

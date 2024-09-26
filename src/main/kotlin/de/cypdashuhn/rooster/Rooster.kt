@@ -11,8 +11,12 @@ import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.RoosterListener
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
+import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
+import de.cypdashuhn.rooster_demo.interfaces.DemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoTable
 import io.github.classgraph.ClassGraph
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
@@ -27,11 +31,15 @@ object Rooster {
     lateinit var plugin: JavaPlugin
     var databasePath: String? = null
 
-    lateinit var rootArguments: MutableList<RootArgument>
-    lateinit var registeredInterfaces: List<Interface<*>>
+    var registeredRootArguments: MutableList<RootArgument> = mutableListOf()
+    var registeredInterfaces: MutableList<Interface<*>> = mutableListOf()
+    var registeredTables: MutableList<Table> = mutableListOf()
+    var registeredDemoTables: MutableList<Table> = mutableListOf()
+    var registeredDemoManager: MutableList<DemoManager> = mutableListOf()
+    var registeredListeners: MutableList<Listener> = mutableListOf()
 
     var beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
-    var playerJoin: ((PlayerJoinEvent) -> Unit)? = null
+    var onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
 
     val cache = RoosterCache<String, Any>(
         CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES)
@@ -39,48 +47,91 @@ object Rooster {
 
     var dynamicTables = mutableListOf<Table>()
 
-    var localeProvider: LocaleProvider? = null
-    var interfaceContextProvider = DatabaseInterfaceContextProvider()
-
-
+    internal lateinit var localeProvider: LocaleProvider
+    internal lateinit var interfaceContextProvider: InterfaceContextProvider
     internal var playerManager: PlayerManager? = null
 
     @Suppress("unused")
-    fun initialize(plugin: JavaPlugin) {
+    fun initialize(
+        plugin: JavaPlugin,
+        localeProvider: LocaleProvider,
+        interfaceContextProvider: InterfaceContextProvider = DatabaseInterfaceContextProvider(),
+        beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null,
+        onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null,
+    ) {
+        this.beforePlayerJoin = beforePlayerJoin
+        this.onPlayerJoin = onPlayerJoin
+        this.localeProvider = localeProvider
+        this.interfaceContextProvider = interfaceContextProvider
+
         this.plugin = plugin
         if (databasePath == null) databasePath = plugin.dataFolder.resolve("database.db").absolutePath
 
         if (!plugin.dataFolder.exists()) {
             plugin.dataFolder.mkdirs()
         }
+        initializeInstances()
 
-        val tables = dynamicTables + getTables()
+        val tables = dynamicTables + registeredTables
         initDatabase(tables, databasePath!!)
 
         // listeners
         val pluginManager = Bukkit.getPluginManager()
-        for (listener in getListeners()) {
+        for (listener in registeredListeners) {
             pluginManager.registerEvents(listener, plugin)
         }
 
         // commands
-        rootArguments = getCommands()
-        rootArguments.forEach { arg ->
+        registeredRootArguments.forEach { arg ->
             plugin.getCommand(arg.label)?.let {
                 it.setExecutor(Command)
                 it.tabCompleter = Completer
             }
         }
-
-        // interface
-        registeredInterfaces = getInterfaces()
     }
 
-    private fun getCommands(): MutableList<RootArgument> {
-        val commands = mutableListOf<RootArgument>()
+    private fun initializeInstances() {
         ClassGraph()
-            .enableAllInfo()
+            .enableClassInfo()
+            .enableAllInfo() // Enable annotation scanning
             .scan().use { scanResult ->
+                val lists: List<Triple<KClass<*>, KClass<*>, MutableList<Any>>> = listOf(
+                    Triple(RoosterInterface::class, Interface::class, registeredInterfaces as MutableList<Any>),
+                    Triple(RoosterTable::class, Table::class, registeredTables as MutableList<Any>),
+                    Triple(RoosterDemoTable::class, Table::class, registeredDemoTables as MutableList<Any>),
+                    Triple(RoosterDemoManager::class, DemoManager::class, registeredDemoManager as MutableList<Any>),
+                    Triple(RoosterListener::class, Listener::class, registeredListeners as MutableList<Any>),
+                )
+
+                lists.forEach { (annotationClass, targetClass, instances) ->
+                    val info = scanResult.getClassesWithAnnotation(annotationClass.qualifiedName)
+
+                    for (classInfo in info) {
+                        try {
+                            val clazz = classInfo.loadClass(targetClass.java)
+
+                            val instance = when {
+                                clazz.kotlin.objectInstance != null -> {
+                                    clazz.kotlin.objectInstance as Any
+                                }
+
+                                clazz.kotlin.companionObjectInstance != null -> {
+                                    clazz.kotlin.companionObjectInstance as Any
+                                }
+
+                                else -> {
+                                    clazz.getDeclaredConstructor().newInstance() as Any
+                                }
+                            }
+
+                            instances.add(instance)
+                        } catch (ex: Throwable) {
+                            println("Could not load class: ${classInfo.name}, exception: ")
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+
                 scanResult
                     .getClassesWithFieldAnnotation(RoosterCommand::class.qualifiedName)
                     .forEach { classInfo ->
@@ -89,52 +140,10 @@ object Rooster {
                             field.isAccessible = true
                             val fieldValue = field.get(null)
                             if (fieldValue is RootArgument) {
-                                commands.add(fieldValue)
+                                registeredRootArguments.add(fieldValue)
                             }
                         }
                     }
             }
-        return commands
-    }
-
-    private fun getInterfaces() = getAnnotatedInstances(RoosterInterface::class, Interface::class)
-    private fun getListeners() = getAnnotatedInstances(RoosterListener::class, Listener::class)
-    private fun getTables() = getAnnotatedInstances(RoosterTable::class, Table::class)
-
-    private fun <T : Any> getAnnotatedInstances(kClass: KClass<*>, targetClass: KClass<T>): List<T> {
-        val instances = mutableListOf<T>()
-
-        ClassGraph()
-            .enableClassInfo()
-            .enableAnnotationInfo() // Enable annotation scanning
-            .scan().use { scanResult ->
-                val info = scanResult.getClassesWithAnnotation(kClass.qualifiedName)
-
-                for (classInfo in info) {
-                    try {
-                        val clazz = classInfo.loadClass(targetClass.java)
-
-                        val instance = when {
-                            clazz.kotlin.objectInstance != null -> {
-                                clazz.kotlin.objectInstance as T
-                            }
-
-                            clazz.kotlin.companionObjectInstance != null -> {
-                                clazz.kotlin.companionObjectInstance as T
-                            }
-
-                            else -> {
-                                clazz.getDeclaredConstructor().newInstance() as T
-                            }
-                        }
-                        instances.add(instance)
-                    } catch (ex: Throwable) {
-                        println("Could not load class: ${classInfo.name}, exception: ")
-                        ex.printStackTrace()
-                    }
-                }
-            }
-
-        return instances
     }
 }

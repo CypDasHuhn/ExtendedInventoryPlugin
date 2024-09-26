@@ -1,8 +1,8 @@
 package de.cypdashuhn.rooster.ui.interfaces
 
 import de.cypdashuhn.rooster.*
-import de.cypdashuhn.rooster.simulator.InterfaceSimulator
 import de.cypdashuhn.rooster.simulator.Simulator
+import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent

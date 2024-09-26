@@ -1,13 +1,11 @@
 package de.cypdashuhn.rooster.commands
 
-import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.Rooster.cache
-import de.cypdashuhn.rooster.Rooster.rootArguments
+import de.cypdashuhn.rooster.Rooster.registeredRootArguments
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
 import de.cypdashuhn.rooster.commands.argument_constructors.BaseArgument
 import de.cypdashuhn.rooster.commands.argument_constructors.InvokeInfo
 import org.bukkit.command.CommandSender
-import java.util.concurrent.TimeUnit
 
 object ArgumentParser {
     val defaultErrorArgumentsOverflow: (ArgumentInfo) -> Unit =
@@ -72,7 +70,7 @@ object ArgumentParser {
         val errorWithoutInfo = ReturnResult()
 
         val topArgument = requireNotNull(
-            rootArguments.firstOrNull { it.label == label }
+            registeredRootArguments.firstOrNull { it.label.lowercase() == label.lowercase() }
         ) { "Root must be found, else command invocation wouldn't be possible" }
 
         topArgument.startingUnit?.let {
@@ -89,7 +87,7 @@ object ArgumentParser {
         var cachePosition: Int? = null
         val cacheInfo = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
 
-        if (cacheInfo != null) {
+        if (cacheInfo != null && commandParseType == CommandParseType.TabCompleter) {
             if (cacheInfo.stringArguments.withoutLast()
                 contentEquals
                 stringArguments.withoutLast() ||
@@ -102,8 +100,8 @@ object ArgumentParser {
                 errorArgumentOverflow = cacheInfo.errorArgumentOverflow
 
                 cachePosition = when {
-                    stringArguments.last().isBlank() -> cacheInfo.stringArguments.size -1
-                    else ->  cacheInfo.stringArguments.size -1
+                    stringArguments.last().isBlank() -> cacheInfo.stringArguments.size - 1
+                    else -> cacheInfo.stringArguments.size - 1
                 }
             }
         }
@@ -189,8 +187,6 @@ object ArgumentParser {
             // Only invoked if it's the last element
             cacheCommand(sender, cacheInfo)
 
-            val test = cache.getIfPresent(CACHE_KEY, sender) as CacheInfo?
-
             when (commandParseType) {
                 CommandParseType.TabCompleter -> {
                     return ReturnResult(currentTabCompletions())
@@ -245,8 +241,5 @@ object ArgumentParser {
             sender,
             cacheInfo,
         )
-
-        val test = cache.getIfPresent(CACHE_KEY, sender)
-        println(test)
     }
 }

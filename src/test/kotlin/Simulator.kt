@@ -1,16 +1,11 @@
-import de.cypdashuhn.rooster.Rooster
-import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
-import de.cypdashuhn.rooster.simulator.Simulator
-import de.cypdashuhn.rooster_demo.interfaces.graph.GraphDataManager
-import de.cypdashuhn.rooster_demo.interfaces.init
-import de.cypdashuhn.rooster_demo.interfaces.scroll.ScrollDataManager
+import de.cypdashuhn.rooster.localization.LocaleProvider
+import de.cypdashuhn.rooster.simulator.RoosterSimulator
+
+object MySimulator : RoosterSimulator() {
+    override fun getLocaleProvider(): LocaleProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
+}
 
 fun main() {
-    val playerManager = PlayerManager()
-    Rooster.localeProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
-
-    Simulator.startSimulator { player ->
-        listOf(ScrollDataManager, GraphDataManager).init()
-    }
+    MySimulator.start()
 }

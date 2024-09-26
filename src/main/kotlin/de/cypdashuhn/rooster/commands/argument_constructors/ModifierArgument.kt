@@ -1,12 +1,14 @@
 package de.cypdashuhn.rooster.commands.argument_constructors
 
+fun returnTrue(): ArgumentHandler = { true }
+
 class ModifierArgument(
     // [11]
     isArgument: ArgumentPredicate,
     tabCompletions: CompletionLambda,
     isValid: ((ArgumentInfo) -> Pair<Boolean, ((ArgumentInfo) -> Unit)?>)? = null,
     isValidCompleter: ArgumentPredicate? = null,
-    argumentHandler: ArgumentHandler = returnString(),
+    argumentHandler: ArgumentHandler = returnTrue(),
     key: String,
 ) : BaseArgument(
     isArgument = isArgument,

@@ -1,7 +1,8 @@
 package de.cypdashuhn.rooster_demo.interfaces.graph
 
-import de.cypdashuhn.rooster.database.RoosterTable
-import de.cypdashuhn.rooster_demo.interfaces.DemoDatabase
+import de.cypdashuhn.rooster_demo.interfaces.DemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoManager
+import de.cypdashuhn.rooster_demo.interfaces.RoosterDemoTable
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -10,9 +11,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 data class GraphData(val position: Pair<Int, Int>, val name: String, val color: String)
 
-object GraphDataManager : DemoDatabase() {
+@RoosterDemoManager
+object GraphDataManager : DemoManager() {
 
-    @RoosterTable
+    @RoosterDemoTable
     object GraphTable : IntIdTable("RoosterTestGraphData") {
         val name = varchar("name", 255)
         val color = varchar("color", 255)
@@ -46,6 +48,8 @@ object GraphDataManager : DemoDatabase() {
     }
 
     override fun demoPrep() {
+        if (GraphTable.selectAll().count().toInt() > 0) return
+
         repeat(75) {
             val randomColor = listOf("red", "green", "blue", "yellow", "lime", "purple").random()
             val randomX = (-25..25).random()

@@ -72,6 +72,7 @@ bukkit {
 
     commands {
         register("ei")
+        register("testInterface")
     }
 }
 tasks {
