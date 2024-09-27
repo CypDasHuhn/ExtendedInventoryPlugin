@@ -3,7 +3,7 @@ package de.cypdashuhn.rooster.simulator
 import be.seeseemelk.mockbukkit.MockBukkit
 import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.simulator.commands.CommandSimulatorHandler
-import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
+import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import net.kyori.adventure.text.Component
@@ -24,13 +24,16 @@ object Simulator {
 
         val plugin = MockBukkit.createMockPlugin()
 
+
         roosterSimulator.beforeInitialize()
         Rooster.dynamicTables.addAll(Rooster.registeredDemoTables)
+
         roosterSimulator.initializeRooster(plugin)
 
         roosterSimulator.onInitialize()
 
-        var player = server.addPlayer()
+
+        val player = server.addPlayer()
 
         val event = PlayerJoinEvent(player, Component.empty())
         roosterSimulator.beforePlayerJoin(event)
@@ -67,15 +70,15 @@ object Simulator {
                 }
 
                 "open" -> {
-                    InterfaceSimulator.parseOpening(args)
+                    InterfaceSimulatorHandler.parseOpening(args)
                 }
 
                 "show" -> {
-                    InterfaceSimulator.parseShow(args)
+                    InterfaceSimulatorHandler.parseShow(args)
                 }
 
                 "click" -> {
-                    InterfaceSimulator.parseClick(args)
+                    InterfaceSimulatorHandler.parseClick(args)
                 }
 
                 else -> println("Unknown command: $input")
@@ -86,8 +89,12 @@ object Simulator {
         return true to false
     }
 
+    var isTerminal = false
+
     fun startTerminal() {
         println("Welcome to the Input Simulator. Type commands to simulate input. Type 'exit' to quit.")
+
+        isTerminal = true
 
         while (true) {
             print("> ")

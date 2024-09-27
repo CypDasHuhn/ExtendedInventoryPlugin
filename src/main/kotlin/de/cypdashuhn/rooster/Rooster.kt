@@ -9,6 +9,7 @@ import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.RoosterListener
+import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
@@ -54,10 +55,10 @@ object Rooster {
     @Suppress("unused")
     fun initialize(
         plugin: JavaPlugin,
-        localeProvider: LocaleProvider,
+        localeProvider: LocaleProvider = DatabaseLocaleProvider(listOf("en"), "en"),
         interfaceContextProvider: InterfaceContextProvider = DatabaseInterfaceContextProvider(),
-        beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null,
-        onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null,
+        beforePlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
+        onPlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
     ) {
         this.beforePlayerJoin = beforePlayerJoin
         this.onPlayerJoin = onPlayerJoin

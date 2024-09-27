@@ -30,8 +30,8 @@ abstract class Interface<T : Context>(
 
     }
 
-    fun openInventory(player: Player, context: T) {
-        InterfaceManager.openTargetInterface(player, this, context)
+    fun openInventory(player: Player, context: T): Inventory {
+        return InterfaceManager.openTargetInterface(player, this, context)
     }
 
     fun getContext(player: Player): T {

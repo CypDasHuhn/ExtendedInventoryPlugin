@@ -2,7 +2,7 @@ package de.cypdashuhn.rooster.ui.interfaces
 
 import de.cypdashuhn.rooster.*
 import de.cypdashuhn.rooster.simulator.Simulator
-import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
+import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -37,7 +37,7 @@ object InterfaceManager {
      * [targetInterface] for the given [player] applied with the current state
      * of the interface ([context]).
      */
-    fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T) {
+    fun <T : Context> openTargetInterface(player: Player, targetInterface: Interface<T>, context: T): Inventory {
         Rooster.cache.put(CHANGES_INTERFACE_KEY, player, true)
 
         playerInterfaceMap[player] = targetInterface.interfaceName
@@ -49,11 +49,13 @@ object InterfaceManager {
         Rooster.interfaceContextProvider.updateContext(player, targetInterface, context)
 
         Simulator.onlyTest {
-            InterfaceSimulator.printInterface(inventory)
+            if (Simulator.isTerminal) InterfaceSimulatorHandler.printInterface(inventory)
+            Simulator.currentInventory = inventory
         }
         Simulator.nonTest {
             player.openInventory(inventory)
         }
+        return inventory
     }
 
     /**
