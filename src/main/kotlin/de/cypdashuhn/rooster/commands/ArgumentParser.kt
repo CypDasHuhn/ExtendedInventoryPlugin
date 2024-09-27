@@ -144,16 +144,16 @@ object ArgumentParser {
 
             currentArgument.errorArgumentOverflow?.let { errorArgumentOverflow = it }
 
-            if (currentArgument.isValid != null) {
-                val (isValid, invalidAction) = currentArgument.isValid!!(argumentInfo)
-                if (!isValid) {
-                    return ReturnResult(success = false) { invalidAction?.invoke(argumentInfo) }
-                } else {
-                    values[currentArgument.key] = currentArgument.argumentHandler(argumentInfo)
+            if (commandParseType == CommandParseType.Invocation) {
+                if (currentArgument.isValid != null) {
+                    val (isValid, invalidAction) = currentArgument.isValid!!(argumentInfo)
+                    if (!isValid) {
+                        return ReturnResult(success = false) { invalidAction?.invoke(argumentInfo) }
+                    }
                 }
-            } else {
                 values[currentArgument.key] = currentArgument.argumentHandler(argumentInfo)
             }
+
 
             arguments // Each modifier not mentioned is set to false
                 .filter { it.isModifier }
@@ -162,6 +162,16 @@ object ArgumentParser {
             val isLastElement = index == stringArguments.size - 1
 
             if (!isLastElement) {
+                if (commandParseType == CommandParseType.TabCompleter) {
+                    if (currentArgument.isValid != null) {
+                        val (isValid, invalidAction) = currentArgument.isValid!!(argumentInfo)
+                        if (!isValid) {
+                            return ReturnResult(success = false) { invalidAction?.invoke(argumentInfo) }
+                        }
+                    }
+                    values[currentArgument.key] = currentArgument.argumentHandler(argumentInfo)
+                }
+
                 if (currentArgument.isModifier) {
                     // step further (stay but without this one)
                     arguments.remove(currentArgument)

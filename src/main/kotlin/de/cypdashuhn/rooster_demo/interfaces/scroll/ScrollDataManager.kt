@@ -29,7 +29,8 @@ object ScrollDataManager : DemoManager() {
 
     fun testDataById(id: Int): ScrollData? {
         return transaction {
-            val entry = ScrollTable.selectAll().where { ScrollTable.id eq id }.firstOrNull() ?: return@transaction null
+            val entry =
+                ScrollTable.selectAll().where { ScrollTable.id eq id + 1 }.firstOrNull() ?: return@transaction null
             ScrollData(
                 entry[ScrollTable.id].value,
                 entry[ScrollTable.name],

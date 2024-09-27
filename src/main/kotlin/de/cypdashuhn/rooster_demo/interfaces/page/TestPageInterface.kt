@@ -1,9 +1,11 @@
 package de.cypdashuhn.rooster_demo.interfaces.page
 
+import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster.ui.interfaces.constructors.PageInterface
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
+@RoosterInterface
 object TestPageInterface :
     PageInterface<TestPageInterface.TestPageContext>("TestPageInterface", TestPageContext::class) {
     class TestPageContext(override var page: Int) : PageContext(page)

@@ -41,3 +41,5 @@ data class Click(
  * saved in between clicks, to save the current state of the interface.
  */
 abstract class Context
+
+val emptyContext = object : Context() {}

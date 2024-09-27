@@ -3,6 +3,7 @@ package de.cypdashuhn.rooster.ui.interfaces.constructors.confirmation
 import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.ui.interfaces.ClickInfo
 import de.cypdashuhn.rooster.ui.interfaces.Context
+import de.cypdashuhn.rooster.ui.interfaces.emptyContext
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.ui.items.constructors.PlaceholderItem
 import de.cypdashuhn.rooster.util.createItem
@@ -20,6 +21,9 @@ abstract class ConfirmationInterface<T : Context>(
     override val onConfirm: (ClickInfo<T>) -> Unit,
     override val onCancel: (CancelInfo<T>) -> Unit,
 ) : BaseConfirmationInterface<T>(interfaceName, contextClass, onConfirm, onCancel) {
+    override fun defaultContext(player: Player): T {
+        return emptyContext as T
+    }
 
     open fun getInventoryName(player: Player, context: T): Component {
         return Component

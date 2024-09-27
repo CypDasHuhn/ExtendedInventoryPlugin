@@ -17,6 +17,7 @@ class AttributeKey<T : Any?>(
         inline fun <reified T : Any> custom(key: String, default: T): AttributeKey<T> {
             return AttributeKey(key, T::class.java, default)
         }
+
         inline fun <reified T : Any?> customNullable(key: String, default: T? = null): AttributeKey<T> {
             return AttributeKey(key, T::class.java, default)
         }
@@ -30,9 +31,10 @@ class AttributeKey<T : Any?>(
 class AttributeKeyManager : UtilityDatabase() {
     override fun mainDatabase(): Table = AttributeKeys
 
-    object AttributeKeys : IntIdTable("attribute_keys") {
+    object AttributeKeys : IntIdTable("RoosterAttributeKeys") {
         val key = varchar("key", 255).uniqueIndex()
     }
+
     class DbAttributeKey(id: EntityID<Int>) : IntEntity(id) {
         companion object : IntEntityClass<DbAttributeKey>(AttributeKeys)
 
