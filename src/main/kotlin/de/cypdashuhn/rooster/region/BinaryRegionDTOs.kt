@@ -126,7 +126,7 @@ internal class BinaryGroupWrapper {
     }
 }
 
-class RegisteredRegion internal constructor(
+class RegisteredRegionDTO internal constructor(
     val region: Region,
     val regionId: RegionId,
     val regionKey: String?,

@@ -9,14 +9,10 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.transactions.transaction
 
-abstract class AttributeManager<T : Any?, E : Any> : UtilityDatabase() {
+abstract class AttributeManager<T : Any?, E : Any>(private val table: Attributes) : UtilityDatabase(table) {
     private val gson = Gson()
     private val attributeKeyManager = AttributeKeyManager()
 
-    override fun mainDatabase(): Table = getAttributesTable()
-    private val table by lazy { getAttributesTable() }
-
-    protected abstract fun getAttributesTable(): Attributes
     protected abstract fun fieldInfo(value: T): Pair<Column<E>, E>
     private val valueToQuery: (T) -> Op<Boolean> by lazy {
         { fieldInfo(it).first eq fieldInfo(it).second }

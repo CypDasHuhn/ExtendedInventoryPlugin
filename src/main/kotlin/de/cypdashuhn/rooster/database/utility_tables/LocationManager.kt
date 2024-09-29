@@ -6,13 +6,14 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.IntegerColumnType
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.castTo
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LocationManager : UtilityDatabase() {
-    override fun mainDatabase(): Table = Locations
-
+class LocationManager : UtilityDatabase(Locations) {
     object Locations : IntIdTable("RoosterLocations") {
         val key = varchar("key", 36).nullable()
 

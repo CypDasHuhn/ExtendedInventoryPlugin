@@ -8,7 +8,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ReferenceOption
 
-class PlayerAttributeManager : AttributeManager<Player, EntityID<Int>>() {
+class PlayerAttributeManager : AttributeManager<Player, EntityID<Int>>(PlayerAttributes) {
     init {
         requireNotNull(Rooster.playerManager) { "Player Manager must be registered. Order matters, initialize the Player Manager before this one!" }
     }
@@ -16,8 +16,6 @@ class PlayerAttributeManager : AttributeManager<Player, EntityID<Int>>() {
     object PlayerAttributes : Attributes("RoosterPlayerAttributes") {
         val player = reference("player", PlayerManager.Players, onDelete = ReferenceOption.CASCADE)
     }
-
-    override fun getAttributesTable() = PlayerAttributes
 
     override fun fieldInfo(value: Player): Pair<Column<EntityID<Int>>, EntityID<Int>> =
         PlayerAttributes.player to value.dbPlayer().id

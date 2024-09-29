@@ -1,8 +1,13 @@
 package de.cypdashuhn.rooster.region
 
+import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
 import org.bukkit.event.Event
 import org.bukkit.event.player.PlayerMoveEvent
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.jvm.ExperimentalReflectionOnLambdas
+import kotlin.reflect.jvm.reflect
 
 internal class RegionLambdaWrapper<T : Any> {
     private var regionLambda: RegionLambda? = null
@@ -39,14 +44,19 @@ internal class RegionLambdaWrapper<T : Any> {
 
 class RegionLambda private constructor(
     val actionLambda: (Event) -> Unit,
-    val eventTargetDTO: EventTargetDTO
+    val eventTargetDTO: EventTargetDTO,
+    val lambdaKey: String?
 ) {
     companion object {
         fun multipleEvents(
             eventTargetDTO: EventTargetDTO,
             actionLambda: (Event) -> Unit
         ): RegionLambda {
-            return RegionLambda(actionLambda, eventTargetDTO)
+            return RegionLambda(
+                actionLambda,
+                eventTargetDTO,
+                extractLambdaKey(actionLambda)
+            )
         }
 
         fun moveEvent(
@@ -58,7 +68,8 @@ class RegionLambda private constructor(
                     require(event is PlayerMoveEvent) { "Event is not of PlayerMoveEvent type" }
                     actionLambda(event)
                 },
-                EventTargetDTO(moveEvents = eventTarget)
+                EventTargetDTO(moveEvents = eventTarget),
+                extractLambdaKey(actionLambda)
             )
         }
 
@@ -71,8 +82,15 @@ class RegionLambda private constructor(
                     require(event::class == eventClass) { "Event is not of type ${eventClass.simpleName}" }
                     actionLambda(event as E)
                 },
-                EventTargetDTO(events = listOf(eventClass as KClass<out Event>))
+                EventTargetDTO(events = listOf(eventClass as KClass<out Event>)),
+                extractLambdaKey(actionLambda)
             )
+        }
+
+        @OptIn(ExperimentalReflectionOnLambdas::class)
+        private fun <E : Event> extractLambdaKey(lambda: (E) -> Unit): String? {
+            val functionRef = lambda.reflect() as? KFunction<*>
+            return functionRef?.findAnnotation<RoosterLambda>()?.key
         }
     }
 }
@@ -80,7 +98,8 @@ class RegionLambda private constructor(
 class RegionLambdaWithContext<T : Any> private constructor(
     val contextClass: KClass<T>,
     val actionLambda: (Event, T) -> Unit,
-    val eventTargetDTO: EventTargetDTO
+    val eventTargetDTO: EventTargetDTO,
+    val lambdaKey: String?
 ) {
     companion object {
         fun <T : Any> multipleEvents(
@@ -88,7 +107,12 @@ class RegionLambdaWithContext<T : Any> private constructor(
             contextClass: KClass<T>,
             actionLambda: (Event, T) -> Unit
         ): RegionLambdaWithContext<T> {
-            return RegionLambdaWithContext(contextClass, actionLambda, eventTargetDTO)
+            return RegionLambdaWithContext(
+                contextClass,
+                actionLambda,
+                eventTargetDTO,
+                extractLambdaKey(actionLambda)
+            )
         }
 
         fun <T : Any> moveEvent(
@@ -99,7 +123,8 @@ class RegionLambdaWithContext<T : Any> private constructor(
             return RegionLambdaWithContext(
                 contextClass,
                 { event, context -> actionLambda(event as PlayerMoveEvent, context) },
-                EventTargetDTO(moveEvents = eventTarget)
+                EventTargetDTO(moveEvents = eventTarget),
+                extractLambdaKey(actionLambda)
             )
         }
 
@@ -114,8 +139,15 @@ class RegionLambdaWithContext<T : Any> private constructor(
                     require(event::class == eventClass) { "Event is not of type ${eventClass.simpleName}" }
                     actionLambda(event as E, context)
                 },
-                EventTargetDTO(events = listOf(eventClass as KClass<out Event>))
+                EventTargetDTO(events = listOf(eventClass as KClass<out Event>)),
+                extractLambdaKey(actionLambda)
             )
+        }
+
+        @OptIn(ExperimentalReflectionOnLambdas::class)
+        private fun <T : Any, E : Event> extractLambdaKey(lambda: (E, T) -> Unit): String? {
+            val functionRef = lambda.reflect() as? KFunction<*>
+            return functionRef?.findAnnotation<RoosterLambda>()?.key
         }
     }
 }

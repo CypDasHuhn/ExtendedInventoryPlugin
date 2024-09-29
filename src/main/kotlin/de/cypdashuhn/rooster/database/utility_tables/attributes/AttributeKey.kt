@@ -5,7 +5,6 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class AttributeKey<T : Any?>(
@@ -28,9 +27,7 @@ class AttributeKey<T : Any?>(
     }
 }
 
-class AttributeKeyManager : UtilityDatabase() {
-    override fun mainDatabase(): Table = AttributeKeys
-
+class AttributeKeyManager : UtilityDatabase(AttributeKeys) {
     object AttributeKeys : IntIdTable("RoosterAttributeKeys") {
         val key = varchar("key", 255).uniqueIndex()
     }

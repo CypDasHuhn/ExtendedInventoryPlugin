@@ -8,13 +8,10 @@ import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class ItemManager : UtilityDatabase() {
-    override fun mainDatabase(): Table = Items
-
+class ItemManager : UtilityDatabase(Items) {
     object Items : IntIdTable("RoosterItems") {
         val itemStack = text("item")
         val key = varchar("key", 50).nullable()

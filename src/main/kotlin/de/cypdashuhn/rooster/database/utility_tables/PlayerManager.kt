@@ -17,9 +17,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
  * call frequency exceeds API Limitations, or whatever else you'd like to
  * do.
  */
-class PlayerManager : UtilityDatabase() {
-    override fun mainDatabase() = Players
-
+class PlayerManager : UtilityDatabase(Players) {
     init {
         this.also { Rooster.playerManager = it }
     }

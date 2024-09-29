@@ -9,6 +9,7 @@ import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
 import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
+import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
 import de.cypdashuhn.rooster.listeners.RoosterListener
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.localization.SqlLocaleProvider
@@ -25,6 +26,7 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Table
+import java.lang.reflect.Method
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
@@ -41,6 +43,7 @@ object Rooster {
     var registeredDemoTables: MutableList<Table> = mutableListOf()
     var registeredDemoManager: MutableList<DemoManager> = mutableListOf()
     var registeredListeners: MutableList<Listener> = mutableListOf()
+    var registeredFunctions: MutableMap<String, Method> = mutableMapOf()
 
     var beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
     var onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
@@ -148,6 +151,25 @@ object Rooster {
                             }
                         }
                     }
+
+                scanResult
+                    .getClassesWithMethodAnnotation(RoosterLambda::class.qualifiedName)
+                    .forEach { classInfo ->
+                        classInfo.methodInfo.forEach { methodInfo ->
+                            val clazz = Class.forName(classInfo.name)
+                            val method = clazz.getDeclaredMethod(methodInfo.name)
+                            val annotation = method.getAnnotation(RoosterLambda::class.java)
+
+                            if (annotation != null) {
+                                method.isAccessible = true
+
+                                registeredFunctions[annotation.key] = method
+                                println("Registered function with key: ${annotation.key}")
+                            }
+                        }
+                    }
+
+
             }
     }
 }
