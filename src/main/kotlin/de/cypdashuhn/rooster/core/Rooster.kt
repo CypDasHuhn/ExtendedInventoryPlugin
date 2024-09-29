@@ -1,6 +1,7 @@
-package de.cypdashuhn.rooster
+package de.cypdashuhn.rooster.core
 
 import com.google.common.cache.CacheBuilder
+import de.cypdashuhn.rooster.RoosterCache
 import de.cypdashuhn.rooster.commands.Command
 import de.cypdashuhn.rooster.commands.Completer
 import de.cypdashuhn.rooster.commands.RoosterCommand
@@ -9,10 +10,10 @@ import de.cypdashuhn.rooster.database.RoosterTable
 import de.cypdashuhn.rooster.database.initDatabase
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.RoosterListener
-import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.localization.LocaleProvider
-import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
+import de.cypdashuhn.rooster.localization.SqlLocaleProvider
 import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
+import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
 import de.cypdashuhn.rooster_demo.interfaces.DemoManager
@@ -31,6 +32,8 @@ import kotlin.reflect.full.companionObjectInstance
 object Rooster {
     lateinit var plugin: JavaPlugin
     var databasePath: String? = null
+    val pluginFolder: String by lazy { plugin.dataFolder.absolutePath }
+    val roosterFolder: String by lazy { plugin.dataFolder.parentFile.resolve("Rooster").absolutePath }
 
     var registeredRootArguments: MutableList<RootArgument> = mutableListOf()
     var registeredInterfaces: MutableList<Interface<*>> = mutableListOf()
@@ -55,17 +58,17 @@ object Rooster {
     @Suppress("unused")
     fun initialize(
         plugin: JavaPlugin,
-        localeProvider: LocaleProvider = DatabaseLocaleProvider(listOf("en"), "en"),
-        interfaceContextProvider: InterfaceContextProvider = DatabaseInterfaceContextProvider(),
+        localeProvider: LocaleProvider = SqlLocaleProvider(listOf("en"), "en"),
+        interfaceContextProvider: InterfaceContextProvider = SqlInterfaceContextProvider(),
         beforePlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
         onPlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
     ) {
-        this.beforePlayerJoin = beforePlayerJoin
-        this.onPlayerJoin = onPlayerJoin
-        this.localeProvider = localeProvider
-        this.interfaceContextProvider = interfaceContextProvider
+        Rooster.beforePlayerJoin = beforePlayerJoin
+        Rooster.onPlayerJoin = onPlayerJoin
+        Rooster.localeProvider = localeProvider
+        Rooster.interfaceContextProvider = interfaceContextProvider
 
-        this.plugin = plugin
+        Rooster.plugin = plugin
         if (databasePath == null) databasePath = plugin.dataFolder.resolve("database.db").absolutePath
 
         if (!plugin.dataFolder.exists()) {

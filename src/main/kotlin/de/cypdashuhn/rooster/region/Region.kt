@@ -1,6 +1,7 @@
 package de.cypdashuhn.rooster.region
 
 import de.cypdashuhn.rooster.unfinished.Face
+import de.cypdashuhn.rooster.util.toVector3d
 import de.cypdashuhn.rooster.util.value
 import org.bukkit.Axis
 import org.bukkit.Chunk
@@ -10,12 +11,17 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
+import org.joml.Vector3d
 
 @Suppress("unused")
-data class Region(
+class Region(
     var edge1: Location,
     var edge2: Location
 ) {
+    init {
+        require(edge1.world == edge2.world) { "Locations of a Region must be in the same World" }
+    }
+
     val world: World by lazy { edge1.world }
 
     val minX: Int by lazy { edge1.blockX.coerceAtMost(edge2.blockX) }
@@ -46,6 +52,10 @@ data class Region(
     val minZChunk: Int by lazy { minZ / 16 }
     val maxXChunk: Int by lazy { maxX / 16 }
     val maxZChunk: Int by lazy { maxZ / 16 }
+
+    val vector1: Vector3d by lazy { edge1.toVector3d() }
+    val vector2: Vector3d by lazy { edge2.toVector3d() }
+    val box: Box by lazy { vector1 to vector2 }
 
     fun contains(location: Location): Boolean {
         return minX <= location.x && location.x <= maxX &&

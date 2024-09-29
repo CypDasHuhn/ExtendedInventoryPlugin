@@ -1,10 +1,10 @@
 package de.cypdashuhn.rooster.commands
 
-import de.cypdashuhn.rooster.Rooster.cache
-import de.cypdashuhn.rooster.Rooster.registeredRootArguments
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentInfo
 import de.cypdashuhn.rooster.commands.argument_constructors.BaseArgument
 import de.cypdashuhn.rooster.commands.argument_constructors.InvokeInfo
+import de.cypdashuhn.rooster.core.Rooster.cache
+import de.cypdashuhn.rooster.core.Rooster.registeredRootArguments
 import org.bukkit.command.CommandSender
 
 object ArgumentParser {

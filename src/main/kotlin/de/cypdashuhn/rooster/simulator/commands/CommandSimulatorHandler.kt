@@ -1,8 +1,8 @@
 package de.cypdashuhn.rooster.simulator.commands
 
-import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.commands.ArgumentParser
 import de.cypdashuhn.rooster.commands.Completer.withStarting
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.simulator.Simulator
 
 object CommandSimulatorHandler {

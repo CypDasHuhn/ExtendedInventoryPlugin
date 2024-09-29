@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.database.utility_tables
 
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Players.uuid
 import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.Bukkit

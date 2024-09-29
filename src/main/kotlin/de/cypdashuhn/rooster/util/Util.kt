@@ -57,3 +57,11 @@ fun Location.value(axis: Axis): Double {
         Axis.Z -> this.z
     }
 }
+
+fun sameAxis(vararg axis: Axis): Boolean {
+    val firstAxis = axis.first()
+    axis.forEach {
+        if (it != firstAxis) return false
+    }
+    return true
+}

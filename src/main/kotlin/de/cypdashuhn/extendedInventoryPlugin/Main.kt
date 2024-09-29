@@ -1,17 +1,16 @@
 package de.cypdashuhn.extendedInventoryPlugin
 
 import com.google.common.cache.CacheBuilder
-import database.utility_tables.attributes.AttributeKey
 import database.utility_tables.attributes.PlayerAttributeManager
 import de.cypdashuhn.extendedInventoryPlugin.database.PlayerStateManager.insertStateIfMissing
 import de.cypdashuhn.extendedInventoryPlugin.database.PositionManager
 import de.cypdashuhn.rooster.RoosterCache
-import de.cypdashuhn.rooster.RoosterPlugin
+import de.cypdashuhn.rooster.core.RoosterPlugin
 import de.cypdashuhn.rooster.database.utility_tables.ItemManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
-import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.localization.LocaleProvider
+import de.cypdashuhn.rooster.localization.SqlLocaleProvider
 import de.cypdashuhn.rooster.util.createItem
 import de.cypdashuhn.rooster_demo.interfaces.graph.GraphDataManager
 import de.cypdashuhn.rooster_demo.interfaces.init
@@ -31,12 +30,12 @@ class Main : RoosterPlugin() {
     }
 
     override fun getLocaleProvider(): LocaleProvider {
-        return DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
+        return SqlLocaleProvider(listOf("en", "de", "pl"), "en")
     }
 
     override fun onPlayerJoin(event: PlayerJoinEvent) {
         event.player.insertStateIfMissing()
-        
+
         transaction {
             PositionManager.Position.new {
                 x = 0

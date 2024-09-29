@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.localization
 
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.entity.Player
@@ -11,7 +11,7 @@ import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class DatabaseLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
+class SqlLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
     LocaleProvider(locales, defaultLocale) {
     init {
         Rooster.dynamicTables += PlayerLanguages

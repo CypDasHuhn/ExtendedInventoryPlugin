@@ -1,10 +1,10 @@
 package de.cypdashuhn.rooster_demo
 
-import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.commands.RoosterCommand
 import de.cypdashuhn.rooster.commands.argument_constructors.CentralArgument
 import de.cypdashuhn.rooster.commands.argument_constructors.CentralizedArgumentList
 import de.cypdashuhn.rooster.commands.argument_constructors.RootArgument
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.localization.tSend
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface

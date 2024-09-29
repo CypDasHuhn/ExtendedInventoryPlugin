@@ -1,9 +1,9 @@
-package de.cypdashuhn.rooster
+package de.cypdashuhn.rooster.core
 
-import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.localization.LocaleProvider
-import de.cypdashuhn.rooster.ui.context.DatabaseInterfaceContextProvider
+import de.cypdashuhn.rooster.localization.SqlLocaleProvider
 import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
+import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -16,16 +16,16 @@ interface RoosterShell {
      * If you don't want to use Expose Tables, you can use other Providers.
      * Read more about it here: TODO: Add Doc Link
      */
-    fun getLocaleProvider(): LocaleProvider = DatabaseLocaleProvider(listOf("en"), "en")
+    fun getLocaleProvider(): LocaleProvider = SqlLocaleProvider(listOf("en"), "en")
 
     /**
      * Provides the [InterfaceContextProvider] for managing plugin interfaces.
      *
-     * By default, it returns a [DatabaseInterfaceContextProvider], but you can
+     * By default, it returns a [SqlInterfaceContextProvider], but you can
      * override it if you don't want to use an Expose Table Read more about it
      * here: TODO: Add Doc Link
      */
-    fun getInterfaceContextProvider(): InterfaceContextProvider = DatabaseInterfaceContextProvider()
+    fun getInterfaceContextProvider(): InterfaceContextProvider = SqlInterfaceContextProvider()
 
     /**
      * Called before Rooster initializes. This is where you modify Rooster's

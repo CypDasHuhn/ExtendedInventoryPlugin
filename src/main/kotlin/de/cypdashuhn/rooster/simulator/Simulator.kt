@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.simulator
 
 import be.seeseemelk.mockbukkit.MockBukkit
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.simulator.commands.CommandSimulatorHandler
 import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulatorHandler
 import de.cypdashuhn.rooster.ui.interfaces.Context

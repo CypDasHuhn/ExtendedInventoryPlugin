@@ -2,7 +2,7 @@ package de.cypdashuhn.rooster.ui.context
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import de.cypdashuhn.rooster.*
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
@@ -19,7 +19,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 
-class DatabaseInterfaceContextProvider : InterfaceContextProvider() {
+class SqlInterfaceContextProvider : InterfaceContextProvider() {
     init {
         Rooster.dynamicTables += InterfaceContexts
     }

@@ -1,5 +1,5 @@
-import de.cypdashuhn.rooster.localization.DatabaseLocaleProvider
 import de.cypdashuhn.rooster.localization.LocaleProvider
+import de.cypdashuhn.rooster.localization.SqlLocaleProvider
 import de.cypdashuhn.rooster.simulator.RoosterSimulator
 import de.cypdashuhn.rooster.simulator.commands.CommandSimulator
 import de.cypdashuhn.rooster.simulator.interfaces.InterfaceSimulator
@@ -7,7 +7,7 @@ import de.cypdashuhn.rooster_demo.interfaces.scroll.TestScrollInterface
 import org.bukkit.event.inventory.ClickType
 
 object MySimulator : RoosterSimulator() {
-    override fun getLocaleProvider(): LocaleProvider = DatabaseLocaleProvider(listOf("en", "de", "pl"), "en")
+    override fun getLocaleProvider(): LocaleProvider = SqlLocaleProvider(listOf("en", "de", "pl"), "en")
 }
 
 fun main() {

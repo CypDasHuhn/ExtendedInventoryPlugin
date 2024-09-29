@@ -1,9 +1,9 @@
 package de.cypdashuhn.extendedInventoryPlugin.commands
 
-import de.cypdashuhn.rooster.Rooster
 import de.cypdashuhn.rooster.commands.argument_constructors.ArgumentDetails
 import de.cypdashuhn.rooster.commands.argument_constructors.CentralizedArgumentList
 import de.cypdashuhn.rooster.commands.utility_argument_constructors.ListArgument
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.localization.language
 import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.localization.tSend
@@ -46,11 +46,11 @@ var languageCommandArguments = CentralizedArgumentList(
             }
 
             if (global) {
-                Rooster.localeProvider!!.changeGlobalLanguage(lang.toString())
+                Rooster.localeProvider.changeGlobalLanguage(lang.toString())
                 val senderLang = sender.language()
                 langChangeMessage(sender, senderLang, lang, true)
             } else {
-                Rooster.localeProvider!!.changeLanguage(sender as Player, lang.toString())
+                Rooster.localeProvider.changeLanguage(sender as Player, lang.toString())
 
                 langChangeMessage(sender, lang.toString(), lang, false)
             }

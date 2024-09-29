@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.listeners
 
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent

@@ -1,13 +1,16 @@
-package de.cypdashuhn.rooster
+package de.cypdashuhn.rooster.core
 
 import org.bukkit.plugin.java.JavaPlugin
 
 /**
  * The usual way of registering a Rooster Plugin.
  *
- * This class provides key hooks for integrating with Rooster's initialization lifecycle.
+ * This class provides key hooks for integrating with Rooster's
+ * initialization lifecycle.
  *
- * If you need to create your plugin without extending RoosterPlugin, read here about the alternative:
+ * If you need to create your plugin without extending RoosterPlugin, read
+ * here about the alternative:
+ *
  * TODO: Add Doc Link
  */
 abstract class RoosterPlugin : JavaPlugin(), RoosterShell {

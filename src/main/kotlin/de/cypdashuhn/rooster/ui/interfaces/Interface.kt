@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.ui.interfaces
 
-import de.cypdashuhn.rooster.Rooster.interfaceContextProvider
+import de.cypdashuhn.rooster.core.Rooster.interfaceContextProvider
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryCloseEvent

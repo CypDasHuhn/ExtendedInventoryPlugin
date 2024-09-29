@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.database.utility_tables
 
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import org.bukkit.Location
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass

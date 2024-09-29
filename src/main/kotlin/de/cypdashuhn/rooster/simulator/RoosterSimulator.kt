@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.simulator
 
-import de.cypdashuhn.rooster.Rooster
-import de.cypdashuhn.rooster.RoosterShell
+import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.RoosterShell
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 

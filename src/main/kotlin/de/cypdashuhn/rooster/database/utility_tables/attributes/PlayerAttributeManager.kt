@@ -1,6 +1,6 @@
 package database.utility_tables.attributes
 
-import de.cypdashuhn.rooster.Rooster
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
 import org.bukkit.entity.Player

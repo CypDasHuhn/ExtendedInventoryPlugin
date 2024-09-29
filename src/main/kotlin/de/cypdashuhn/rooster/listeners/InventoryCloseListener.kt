@@ -1,6 +1,6 @@
 package de.cypdashuhn.rooster.listeners
 
-import de.cypdashuhn.rooster.Rooster.cache
+import de.cypdashuhn.rooster.core.Rooster.cache
 import de.cypdashuhn.rooster.ui.interfaces.InterfaceManager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler

@@ -1,7 +1,7 @@
 package de.cypdashuhn.rooster.unfinished
 
-import de.cypdashuhn.rooster.Rooster.cache
-import de.cypdashuhn.rooster.Rooster.plugin
+import de.cypdashuhn.rooster.core.Rooster.cache
+import de.cypdashuhn.rooster.core.Rooster.plugin
 import kotlinx.coroutines.*
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player

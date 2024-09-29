@@ -4,9 +4,9 @@ package de.cypdashuhn.rooster.localization
 
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
-import de.cypdashuhn.rooster.Rooster
-import de.cypdashuhn.rooster.Rooster.cache
-import de.cypdashuhn.rooster.Rooster.localeProvider
+import de.cypdashuhn.rooster.core.Rooster
+import de.cypdashuhn.rooster.core.Rooster.cache
+import de.cypdashuhn.rooster.core.Rooster.localeProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import org.bukkit.command.CommandSender
@@ -22,7 +22,7 @@ object Localization {
         vararg replacements: Pair<String, String?>
     ): String {
         requireNotNull(localeProvider) { "LocaleProvider not set" }
-        val language = language ?: localeProvider!!.getGlobalLanguage()
+        val language = language ?: localeProvider.getGlobalLanguage()
 
         var message = cache.get("$language-$messageKey", null, {
             val resourcePath = "/locales/${language.lowercase()}.json"
@@ -53,7 +53,7 @@ fun t(messageKey: String, language: Language?, vararg replacements: Pair<String,
 
 fun t(messageKey: String, player: Player, vararg replacements: Pair<String, String?>): String {
     requireNotNull(localeProvider) { "LocaleProvider not set" }
-    return Localization.getLocalizedMessage(localeProvider!!.getLanguage(player), messageKey, *replacements)
+    return Localization.getLocalizedMessage(localeProvider.getLanguage(player), messageKey, *replacements)
 }
 
 fun tComponent(messageKey: String, language: Language?, vararg replacements: Pair<String, String?>): TextComponent {
@@ -64,7 +64,7 @@ fun tComponent(messageKey: String, player: Player, vararg replacements: Pair<Str
     requireNotNull(localeProvider) { "LocaleProvider not set" }
     return Component.text(
         Localization.getLocalizedMessage(
-            localeProvider!!.getLanguage(player),
+            localeProvider.getLanguage(player),
             messageKey,
             *replacements
         )
@@ -81,8 +81,8 @@ fun CommandSender.tSend(messageKey: String, vararg replacements: Pair<String, St
 
 fun CommandSender.language(): Language {
     requireNotNull(localeProvider) { "LocaleProvider not set" }
-    return if (this is Player) localeProvider!!.getLanguage(this)
-    else localeProvider!!.getGlobalLanguage()
+    return if (this is Player) localeProvider.getLanguage(this)
+    else localeProvider.getGlobalLanguage()
 }
 
 class Locale(var language: Language?) {
@@ -90,7 +90,7 @@ class Locale(var language: Language?) {
         requireNotNull(localeProvider) { "LocaleProvider not set" }
     }
 
-    private val actualLocale: Language by lazy { language ?: localeProvider!!.getGlobalLanguage() }
+    private val actualLocale: Language by lazy { language ?: localeProvider.getGlobalLanguage() }
     fun t(messageKey: String, vararg replacements: Pair<String, String?>): String {
         return Localization.getLocalizedMessage(actualLocale, messageKey, *replacements)
     }
