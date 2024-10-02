@@ -1,5 +1,6 @@
 package de.cypdashuhn.rooster.region
 
+import de.cypdashuhn.rooster.region.BinaryRegionSearch.value
 import de.cypdashuhn.rooster.unfinished.Face
 import de.cypdashuhn.rooster.util.toVector3d
 import de.cypdashuhn.rooster.util.value
@@ -248,9 +249,10 @@ class Region(
         BEFORE
     }
 
-    fun compareToAxis(axis: Axis, value: Double): AxisComparison {
-        val distanceEdge1 = value - edge1.value(axis)
-        val distanceEdge2 = value - edge2.value(axis)
+    fun compareToAxis(axis: Axis, value: Double, customBox: Box? = null): AxisComparison {
+        val currentBox = customBox ?: this.box
+        val distanceEdge1 = value - currentBox.first.value(axis)
+        val distanceEdge2 = value - currentBox.first.value(axis)
 
         return if (distanceEdge1 > 0 && distanceEdge2 > 0) {
             AxisComparison.BEHIND

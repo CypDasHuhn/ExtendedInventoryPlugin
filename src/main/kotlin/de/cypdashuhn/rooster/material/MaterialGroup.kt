@@ -1,8 +1,8 @@
 package de.cypdashuhn.rooster.material
 
-import de.cypdashuhn.rooster.util.and
-import de.cypdashuhn.rooster.util.andNot
-import de.cypdashuhn.rooster.util.or
+import de.cypdashuhn.rooster.util.infix_gate.and
+import de.cypdashuhn.rooster.util.infix_gate.andNot
+import de.cypdashuhn.rooster.util.infix_gate.or
 import org.bukkit.Material
 
 // @formatter:off

@@ -3,7 +3,7 @@ package de.cypdashuhn.rooster.ui.items
 import de.cypdashuhn.rooster.ui.interfaces.ClickInfo
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
-import de.cypdashuhn.rooster.util.and
+import de.cypdashuhn.rooster.util.infix_gate.and
 import org.bukkit.inventory.ItemStack
 
 open class InterfaceItem<T : Context> : BaseInterfaceItem<T> {

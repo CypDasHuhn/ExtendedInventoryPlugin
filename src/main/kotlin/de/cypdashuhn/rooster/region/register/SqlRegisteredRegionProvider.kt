@@ -27,8 +27,8 @@ class SqlRegisteredRegionProvider : RegisteredRegionProvider() {
         val contextJson = text("context").nullable().default(null)
     }
 
-    class RegisteredRegion(id: EntityID<Int>) : IntEntity(id) {
-        companion object : IntEntityClass<RegisteredRegion>(RegisteredRegions)
+    class DbRegisteredRegion(id: EntityID<Int>) : IntEntity(id) {
+        companion object : IntEntityClass<DbRegisteredRegion>(RegisteredRegions)
 
         var region: Region by RegisteredRegions.regionJson.transform(
             { region -> Gson().toJson(region) },
@@ -46,8 +46,8 @@ class SqlRegisteredRegionProvider : RegisteredRegionProvider() {
             return Gson().fromJson(contextJson, contextClass.java)
         }
 
-        internal fun toDTO(regionLambda: RegionLambdaWrapper<*>): RegisteredRegionDTO {
-            return RegisteredRegionDTO(
+        internal fun toDTO(regionLambda: RegionLambdaWrapper<*>): RegisteredRegion {
+            return RegisteredRegion(
                 region = region,
                 regionKey = regionKey,
                 regionId = id.value,
@@ -57,7 +57,7 @@ class SqlRegisteredRegionProvider : RegisteredRegionProvider() {
     }
 
     override fun add(region: Region, regionKey: String?, regionLambda: RegionLambda) {
-        val newEntry = RegisteredRegion.new {
+        val newEntry = DbRegisteredRegion.new {
             this.region = region
             this.regionKey = regionKey
             this.function = if (regionLambda.lambdaKey != null) functionManager.addKey(regionLambda.lambdaKey) else null
@@ -73,7 +73,7 @@ class SqlRegisteredRegionProvider : RegisteredRegionProvider() {
         regionLambda: RegionLambdaWithContext<T>,
         context: T
     ) {
-        val newEntry = RegisteredRegion.new {
+        val newEntry = DbRegisteredRegion.new {
             this.region = region
             this.regionKey = regionKey
             this.function = if (regionLambda.lambdaKey != null) functionManager.addKey(regionLambda.lambdaKey) else null
@@ -88,20 +88,24 @@ class SqlRegisteredRegionProvider : RegisteredRegionProvider() {
         TODO("Not yet implemented")
     }
 
-    override fun get(region: Region): RegisteredRegionDTO? {
-        RegisteredRegion.findEntry(RegisteredRegions.regionJson eq Gson().toJson(region))
-            ?.toDTO(regionActions[region.id.value]!!)
+    override fun get(region: Region): RegisteredRegion? {
+        val entry = DbRegisteredRegion.findEntry(RegisteredRegions.regionJson eq Gson().toJson(region)) ?: return null
+
+        return entry.toDTO(regionActions[entry.id.value]!!)
     }
 
-    override fun get(regionId: RegionId): RegisteredRegions? {
-        TODO("Not yet implemented")
+    override fun get(regionId: RegionId): RegisteredRegion? {
+        val entry = DbRegisteredRegion.findById(regionId) ?: return null
+        return entry.toDTO(regionActions[regionId]!!)
     }
 
-    override fun get(key: String): RegisteredRegions? {
-        TODO("Not yet implemented")
+    override fun get(key: String): RegisteredRegion? {
+        val entry = DbRegisteredRegion.findEntry(RegisteredRegions.regionKey eq key) ?: return null
+        return entry.toDTO(regionActions[entry.id.value]!!)
     }
 
     override fun delete(regionId: RegionId): DeleteReturnType {
-        TODO("Not yet implemented")
+        DbRegisteredRegion.findById(regionId)?.delete() ?: return DeleteReturnType.REGION_NOT_FOUND
+        return DeleteReturnType.OK
     }
 }

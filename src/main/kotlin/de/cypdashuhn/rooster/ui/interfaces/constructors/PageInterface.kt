@@ -8,7 +8,7 @@ import de.cypdashuhn.rooster.ui.items.Condition
 import de.cypdashuhn.rooster.ui.items.InterfaceItem
 import de.cypdashuhn.rooster.ui.items.ItemStackCreator
 import de.cypdashuhn.rooster.ui.items.constructors.ContextModifierItem
-import de.cypdashuhn.rooster.util.and
+import de.cypdashuhn.rooster.util.infix_gate.and
 import org.bukkit.Material
 import kotlin.reflect.KClass
 

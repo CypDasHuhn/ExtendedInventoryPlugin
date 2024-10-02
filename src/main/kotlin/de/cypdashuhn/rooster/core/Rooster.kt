@@ -13,6 +13,7 @@ import de.cypdashuhn.rooster.database.utility_tables.RoosterLambda
 import de.cypdashuhn.rooster.listeners.RoosterListener
 import de.cypdashuhn.rooster.localization.LocaleProvider
 import de.cypdashuhn.rooster.localization.SqlLocaleProvider
+import de.cypdashuhn.rooster.region.register.RegisteredRegionProvider
 import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
 import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import de.cypdashuhn.rooster.ui.interfaces.Interface
@@ -57,6 +58,7 @@ object Rooster {
     internal lateinit var localeProvider: LocaleProvider
     internal lateinit var interfaceContextProvider: InterfaceContextProvider
     internal var playerManager: PlayerManager? = null
+    internal var regionManager: RegisteredRegionProvider? = null
 
     @Suppress("unused")
     fun initialize(

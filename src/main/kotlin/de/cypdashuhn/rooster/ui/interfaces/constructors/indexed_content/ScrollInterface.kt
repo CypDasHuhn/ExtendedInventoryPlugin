@@ -15,8 +15,8 @@ import kotlin.reflect.KClass
 abstract class ScrollInterface<ContextType : ScrollInterface.ScrollContext, DataType : Any>(
     override val interfaceName: String,
     override val contextClass: KClass<ContextType>,
-    var scrollDirection: ScrollDirection = ScrollDirection.TOP_BOTTOM,
-    override var contentArea: Pair<Pair<Int, Int>, Pair<Int, Int>> = (0 to 0) to (8 to 4)
+    open val scrollDirection: ScrollDirection = ScrollDirection.TOP_BOTTOM,
+    override val contentArea: Pair<Pair<Int, Int>, Pair<Int, Int>> = (0 to 0) to (8 to 4)
 ) : IndexedContentInterface<ContextType, Int, DataType>(interfaceName, contextClass, contentArea) {
     enum class ScrollDirection {
         TOP_BOTTOM,

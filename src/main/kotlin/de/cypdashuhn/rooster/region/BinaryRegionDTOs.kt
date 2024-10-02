@@ -1,5 +1,6 @@
 package de.cypdashuhn.rooster.region
 
+import de.cypdashuhn.rooster.core.Rooster
 import de.cypdashuhn.rooster.util.value
 import org.bukkit.Axis
 import org.bukkit.Location
@@ -30,15 +31,32 @@ class EventTargetDTO(
 typealias RegionId = Int
 typealias Box = Pair<Vector3d, Vector3d>
 
-class RegionReference(region: Region, customBox: Box? = null) {
-    val box: Box?
-    val regionId: RegionId
+class RegionReference {
+    var box: Box
+    var regionId: RegionId = 0
 
-    init {
-        val regionId = RegisteredRegionManager.regionIdByReference(region)
+    constructor(region: Region, customBox: Box? = null) {
+        requireNotNull(Rooster.regionManager) { "RegionManager must be initialized" }
+        val regionId = Rooster.regionManager!!.get(region)?.regionId
         requireNotNull(regionId) { "Region must be registered" }
+
         this.box = customBox ?: region.box
         this.regionId = regionId
+    }
+
+    val regionEntry by lazy { Rooster.regionManager!!.get(regionId)!! }
+    val region: Region by lazy { regionEntry.region }
+
+    private constructor(
+        box: Box,
+        regionId: RegionId
+    ) {
+        this.box = box
+        this.regionId = regionId
+    }
+
+    fun customBoxCopy(box: Box): RegionReference {
+        return RegionReference(box, regionId)
     }
 }
 
@@ -126,7 +144,7 @@ internal class BinaryGroupWrapper {
     }
 }
 
-class RegisteredRegionDTO internal constructor(
+class RegisteredRegion internal constructor(
     val region: Region,
     val regionId: RegionId,
     val regionKey: String?,

@@ -3,6 +3,10 @@ package de.cypdashuhn.rooster.region.register
 import de.cypdashuhn.rooster.region.*
 
 abstract class RegisteredRegionProvider {
+    init {
+
+    }
+
     internal val regionActions: MutableMap<RegionId, RegionLambdaWrapper<*>> = mutableMapOf()
 
     abstract fun add(
@@ -46,11 +50,11 @@ abstract class RegisteredRegionProvider {
         return changeFunctionContext(registeredRegion.regionId, context)
     }
 
-    abstract fun get(region: Region): RegisteredRegionDTO?
+    abstract fun get(region: Region): RegisteredRegion?
 
-    abstract fun get(regionId: RegionId): RegisteredRegionDTO?
+    abstract fun get(regionId: RegionId): RegisteredRegion?
 
-    abstract fun get(key: String): RegisteredRegionDTO?
+    abstract fun get(key: String): RegisteredRegion?
 
 
     enum class DeleteReturnType(val success: Boolean) {

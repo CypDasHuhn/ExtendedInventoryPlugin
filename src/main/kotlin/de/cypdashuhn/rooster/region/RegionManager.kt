@@ -1,11 +1,9 @@
 package de.cypdashuhn.rooster.region
 
-import de.cypdashuhn.rooster.util.value
+import de.cypdashuhn.rooster.region.register.SqlRegisteredRegionProvider
 import org.bukkit.Axis
 import org.bukkit.Location
-import org.bukkit.World
 import org.bukkit.event.Event
-import kotlin.math.absoluteValue
 import kotlin.reflect.KClass
 
 
@@ -14,14 +12,6 @@ object RegionManager {
 
 
     var registeredRegions = listOf<Region>()
-    var mappedRegions =
-        mutableMapOf<
-                EventTargetDTO,
-                MutableMap<
-                        World,
-                        BinaryGroup
-                        >,
-                >() // Regions Index
 
     fun registerRegion(region: Region, vararg eventTarget: KClass<Event>) {
         registerRegion(region, EventTargetDTO(events = listOf(*eventTarget)))
@@ -35,26 +25,16 @@ object RegionManager {
         registeredRegions += region
     }
 
-    fun reloadMappings(eventTarget: EventTargetDTO) {
-        val regionsMappedToWorlds = mappedRegions[eventTarget]
-
-        if (regionsMappedToWorlds == null) {
-            mappedRegions[eventTarget] = mutableMapOf()
-        }
-        requireNotNull(regionsMappedToWorlds)
-
-        regionsMappedToWorlds.clear()
-
-
-    }
-
     internal data class ReadResult(
         val beforeRegions: List<RegionReferenceWrapper>,
         val afterRegions: List<RegionReferenceWrapper>,
         val splitter: Splitter
     )
 
-    internal fun regionsToReadResult(regions: List<Region>): ReadResult {
+    val regionManager = SqlRegisteredRegionProvider()
+
+
+    /*internal fun regionsToReadResult(regions: List<Region>): ReadResult {
         // : Map<Axis, Map<Region.AxisComparison, List<Region>>>
         val map: Map<Pair<Axis, Double>, Map<Region.AxisComparison, MutableList<RegionReferenceWrapper>>> =
             Axis.entries.associate { axis ->
@@ -75,7 +55,7 @@ object RegionManager {
                     val value = ((difference / 2) * offset + minValue)
 
                     axisComparisonToRegion = regions
-                        .map { it to it.compareToAxis(axis, value.toDouble()) }
+                        .map { it to it.compareToAxis(axis, value) }
                         .groupBy({ it.second }, { it.first })
                         .mapValues { it.value.toMutableList() }
 
@@ -129,11 +109,7 @@ object RegionManager {
             null,
             Splitter(axis, splitValue)
         )
-    }
-
-    internal fun regionsToBinaryGroup(regions: List<RegionReference>): BinaryGroup {
-
-    }
+    }*/
 
     // Helper function to set the axis value for Location
     fun Location.setValue(axis: Axis, value: Int) {

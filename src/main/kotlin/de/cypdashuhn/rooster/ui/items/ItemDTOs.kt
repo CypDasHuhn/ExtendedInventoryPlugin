@@ -3,8 +3,8 @@ package de.cypdashuhn.rooster.ui.items
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.InterfaceInfo
 import de.cypdashuhn.rooster.ui.interfaces.Slot
-import de.cypdashuhn.rooster.util.and
 import de.cypdashuhn.rooster.util.createItem
+import de.cypdashuhn.rooster.util.infix_gate.and
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack

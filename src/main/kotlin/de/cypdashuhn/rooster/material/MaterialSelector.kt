@@ -1,15 +1,15 @@
 package de.cypdashuhn.rooster.material
 
 import de.cypdashuhn.rooster.util.PredicateCombinator
-import de.cypdashuhn.rooster.util.andNotR
-import de.cypdashuhn.rooster.util.andR
-import de.cypdashuhn.rooster.util.orR
+import de.cypdashuhn.rooster.util.and
+import de.cypdashuhn.rooster.util.andNot
+import de.cypdashuhn.rooster.util.or
 import org.bukkit.Material
 
 enum class SelectorType(val combinator: PredicateCombinator<Material>) {
-    INCLUDE(::orR),
-    EXCLUDE(::andNotR),
-    REQUIRE(::andR)
+    INCLUDE(::or),
+    EXCLUDE(::andNot),
+    REQUIRE(::and)
 }
 
 class MaterialSelector {
