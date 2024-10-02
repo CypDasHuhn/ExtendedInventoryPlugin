@@ -38,13 +38,12 @@ fun main() {
             pair.second.toDouble()
         )
     }
-    val s = findSeparator(regionItems)
-    println(s)
 }
 //@formatter:on
 
 data class CandidateScore(
     val value: Double,
+    val axis: Axis,
     val diff: Int,
     val inBetween: Int,
     val compareResult: CompareResult,
@@ -63,7 +62,7 @@ fun findCandidateRegions(list: List<RegionReference>) {
     var bestCandidate: CandidateScore? = null
     Axis.entries.forEach { axis ->
         val regionItems = list.map { toRegionItem(it, axis) }
-        val candidate = findSeparator(regionItems)
+        val candidate = findSeparator(regionItems, axis)
 
         val acceptedDifference = acceptedDifference(list.size)
 
@@ -82,18 +81,68 @@ fun findCandidateRegions(list: List<RegionReference>) {
 
     requireNotNull(bestCandidate) { "Best Candidate must be set" }
 
-    val regionItems = bestCandidate!!.compareResult.entries.withIndex().flatMap { (index, entry) ->
+    val inBetweenRatio =
+        (bestCandidate!!.compareResult.beforeAmount + bestCandidate!!.compareResult.afterAmount + bestCandidate!!.inBetween)
+            .toDouble() / bestCandidate!!.inBetween
+
+    when (inBetweenRatio) {
+        in 0.0..0.6 -> {
+
+        }
+
+        in 0.6..1.0 -> {
+
+        }
+
+        else -> {
+            throw IllegalArgumentException("InBetweenRatio must be between 0 and 1")
+        }
+    }
+
+
+}
+
+internal fun split(list: List<RegionReferenceWrapper>): Triple<List<RegionReferenceWrapper>, List<RegionReferenceWrapper>, Splitter>? {
+    return null
+}
+
+fun handleBestCandidate(bestCandidate: CandidateScore, list: List<RegionReference>) {
+    val (lowerItemsRaw, higherItemsRaw) = bestCandidate.compareResult.entries.withIndex().flatMap { (index, entry) ->
         val (item, type) = entry
         val regionReference = list[index]
         require(regionReference.regionId == item.id) { "List order is tangled" }
 
         if (type == AxisComparison.INTERSECTING) {
-            listOf(
-                regionReference.customBoxCopy(regionReference.box.cutEdge(bestSplitter!!, lower = true)),
-                regionReference.customBoxCopy(regionReference.box.cutEdge(bestSplitter!!, lower = false))
+            val splitter = Splitter(
+                bestCandidate.axis,
+                bestCandidate.value
             )
-        } else listOf(regionReference)
+            listOf(
+                regionReference.customBoxCopy(regionReference.box.cutEdge(splitter, lower = true)) to true,
+                regionReference.customBoxCopy(regionReference.box.cutEdge(splitter, lower = false)) to false
+            )
+        } else listOf(regionReference to (type == AxisComparison.BEFORE))
+    }.partition { it.second }
+
+    val lowerItems = lowerItemsRaw.map { it.first }
+    val higherItems = higherItemsRaw.map { it.first }
+}
+
+internal fun getBinaryGroups(
+    upper: List<RegionReferenceWrapper>,
+    lower: List<RegionReferenceWrapper>,
+    splitter: Splitter
+): BinaryGroup {
+    fun groupWrapper(list: List<RegionReferenceWrapper>): BinaryGroupWrapper {
+        return if (list.size == 1) {
+            BinaryGroupWrapper(list[0])
+        } else {
+            val (upper, lower, splitter) = split(list)
+                ?: throw IllegalArgumentException("List must not be empty") // Todo: PLEASEEEE
+            BinaryGroupWrapper(getBinaryGroups(upper, lower, splitter))
+        }
     }
+    return BinaryGroup(groupWrapper(upper), groupWrapper(lower), splitter)
 }
 
 fun toRegionItem(regionReference: RegionReference, axis: Axis): RegionItem {
@@ -105,20 +154,6 @@ fun order(box: Box, axis: Axis): Pair<Double, Double> {
     val firstVal = box.first.value(axis)
     val secondVal = box.second.value(axis)
     return if (firstVal < secondVal) Pair(firstVal, secondVal) else Pair(secondVal, firstVal)
-}
-
-fun cutValues(candidate: CandidateScore): CandidateScore {
-    val newValues = candidate.compareResult.entries.flatMap { (item, type) ->
-        val (id, start, end) = item
-
-        if (type != AxisComparison.INTERSECTING) listOf(item to type)
-        else listOf(
-            RegionItem(id, start, candidate.value) to AxisComparison.BEFORE,
-            RegionItem(id, candidate.value, end) to AxisComparison.AFTER
-        )
-    }
-
-    return candidate.also { it.compareResult.entries = newValues }
 }
 
 internal fun Box.cutEdge(splitter: Splitter, lower: Boolean): Box {
@@ -145,7 +180,7 @@ fun acceptedDifference(size: Int): Int {
     return (size * 0.025).run { if (this < 1) 1.0 else this }.toInt()
 }
 
-fun findSeparator(items: List<RegionItem>): CandidateScore {
+fun findSeparator(items: List<RegionItem>, axis: Axis): CandidateScore {
     assert(items.size > 1) { "Need at least 2 items" }
 
     val estimate = items.map { it.id to (it.start + it.end) / 2 }.sortedBy { it.second }[items.size / 2]
@@ -183,7 +218,7 @@ fun findSeparator(items: List<RegionItem>): CandidateScore {
             if (bestCandidate == null ||
                 (difference <= acceptingDifference || difference <= bestCandidate!!.diff) && inBetween <= bestCandidate!!.inBetween
             ) {
-                bestCandidate = CandidateScore(value, difference, inBetween, compareResult, type)
+                bestCandidate = CandidateScore(value, axis, difference, inBetween, compareResult, type)
                 if (type == CandidateType.INITIAL) {
                     initialEstimateCandidate = bestCandidate
                 }

@@ -128,7 +128,8 @@ object InterfaceSimulatorHandler {
             InventoryType.SlotType.CONTAINER,
             slot,
             clickState,
-            InventoryAction.NOTHING
+            InventoryAction.NOTHING,
+            -1
         )
         val item = Simulator.currentInventory!!.getItem(slot)
         val click = Click(event, Simulator.player!!, item, item?.type, event.slot)

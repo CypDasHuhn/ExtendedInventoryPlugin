@@ -29,22 +29,32 @@ import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Table
 import java.lang.reflect.Method
 import java.util.concurrent.TimeUnit
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 
 object Rooster {
     lateinit var plugin: JavaPlugin
+    internal val roosterLogger: Logger = Logger.getLogger("Rooster")
+    val logger: Logger
+        get() {
+            if (!::plugin.isInitialized) {
+                throw IllegalStateException("Plugin is not initialized. Do not use the Logger before Rooster is initialized.")
+            }
+            return plugin.logger
+        }
+
     var databasePath: String? = null
     val pluginFolder: String by lazy { plugin.dataFolder.absolutePath }
     val roosterFolder: String by lazy { plugin.dataFolder.parentFile.resolve("Rooster").absolutePath }
 
-    var registeredRootArguments: MutableList<RootArgument> = mutableListOf()
-    var registeredInterfaces: MutableList<Interface<*>> = mutableListOf()
-    var registeredTables: MutableList<Table> = mutableListOf()
-    var registeredDemoTables: MutableList<Table> = mutableListOf()
-    var registeredDemoManager: MutableList<DemoManager> = mutableListOf()
-    var registeredListeners: MutableList<Listener> = mutableListOf()
-    var registeredFunctions: MutableMap<String, Method> = mutableMapOf()
+    val registeredRootArguments: MutableList<RootArgument> = mutableListOf()
+    val registeredInterfaces: MutableList<Interface<*>> = mutableListOf()
+    val registeredTables: MutableList<Table> = mutableListOf()
+    val registeredDemoTables: MutableList<Table> = mutableListOf()
+    val registeredDemoManager: MutableList<DemoManager> = mutableListOf()
+    val registeredListeners: MutableList<Listener> = mutableListOf()
+    val registeredFunctions: MutableMap<String, Method> = mutableMapOf()
 
     var beforePlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
     var onPlayerJoin: ((PlayerJoinEvent) -> Unit)? = null
@@ -60,7 +70,6 @@ object Rooster {
     internal var playerManager: PlayerManager? = null
     internal var regionManager: RegisteredRegionProvider? = null
 
-    @Suppress("unused")
     fun initialize(
         plugin: JavaPlugin,
         localeProvider: LocaleProvider = SqlLocaleProvider(listOf("en"), "en"),

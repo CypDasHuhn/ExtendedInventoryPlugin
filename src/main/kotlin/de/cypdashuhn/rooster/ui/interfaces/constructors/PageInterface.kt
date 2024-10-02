@@ -1,5 +1,6 @@
 package de.cypdashuhn.rooster.ui.interfaces.constructors
 
+import de.cypdashuhn.rooster.core.config.RoosterOptions
 import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
 import de.cypdashuhn.rooster.ui.interfaces.Context
@@ -58,7 +59,20 @@ abstract class PageInterface<T : PageInterface.PageContext>(
         val baseItems = mutableListOf<InterfaceItem<T>>()
 
         baseItems.addAll(
-            initializePages().map { page ->
+            initializePages().also { pages ->
+                if (pages.isEmpty()) {
+                    RoosterOptions.Warnings.INTERFACE_PAGES_EMPTY.warn()
+                } else if (pages.none { it.page == 0 } && pages.any { it.page > 0 }) {
+                    RoosterOptions.Warnings.INTERFACE_PAGES_SKIPPED_FIRST.warn()
+                } else {
+                    val overlappingPages = pages.groupBy { it.page }
+                        .filter { it.value.size > 1 }
+
+                    if (overlappingPages.isNotEmpty()) {
+                        RoosterOptions.Warnings.INTERFACE_PAGES_OVERLAP.warn(overlappingPages.mapValues { it.value.size })
+                    }
+                }
+            }.map { page ->
                 page.items.onEach { item ->
                     item.condition = item.condition and { it.context.page == page.page }
                 }
