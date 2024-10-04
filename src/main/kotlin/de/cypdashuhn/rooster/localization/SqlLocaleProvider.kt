@@ -10,8 +10,9 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.Locale
 
-class SqlLocaleProvider(override var locales: List<Language>, override var defaultLocale: String) :
+class SqlLocaleProvider(override var locales: Map<Language, Locale>, override var defaultLocale: String) :
     LocaleProvider(locales, defaultLocale) {
     init {
         Rooster.dynamicTables += PlayerLanguages

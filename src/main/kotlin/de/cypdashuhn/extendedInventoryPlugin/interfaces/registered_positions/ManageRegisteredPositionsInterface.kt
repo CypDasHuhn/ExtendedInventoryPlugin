@@ -3,7 +3,7 @@ package interfaces.registered_positions
 import de.cypdashuhn.extendedInventoryPlugin.database.RegisteredPositionManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager.Companion.dbPlayer
-import de.cypdashuhn.rooster.localization.tComponent
+import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
 import de.cypdashuhn.rooster.ui.interfaces.RoosterInterface
@@ -23,7 +23,7 @@ object ManageRegisteredPositionsInterface :
     ) {
     private const val BOTTOM_BAR = 5 * 9
     override fun getInventory(player: Player, context: ManageRegisteredPositionsContext): Inventory {
-        return Bukkit.createInventory(null, 6 * 9, tComponent("managed_positions_interface_name", player))
+        return Bukkit.createInventory(null, 6 * 9, t("managed_positions_interface_name", player))
     }
 
     class ManageRegisteredPositionsContext(

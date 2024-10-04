@@ -54,7 +54,9 @@ object InterfaceManager {
             Simulator.currentInventory = inventory
         }
         Simulator.nonTest {
-            player.openInventory(inventory)
+            Rooster.runTask {
+                player.openInventory(inventory)
+            }
         }
         return inventory
     }

@@ -19,9 +19,10 @@ import de.cypdashuhn.rooster_demo.interfaces.scroll.ScrollDataManager
 import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class Main : RoosterPlugin() {
+class Main : RoosterPlugin("ExtendedInventoryPlugin") {
     companion object {
         val cache = RoosterCache<String, Any>(CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES))
         val playerManager = PlayerManager()
@@ -30,7 +31,13 @@ class Main : RoosterPlugin() {
     }
 
     override fun getLocaleProvider(): LocaleProvider {
-        return SqlLocaleProvider(listOf("en", "de", "pl"), "en")
+        return SqlLocaleProvider(
+            mapOf(
+                "en_US" to Locale.ENGLISH,
+                "de_DE" to Locale.GERMAN,
+                "pl_PL" to Locale.forLanguageTag("pl-PL")
+            ), "en_US"
+        )
     }
 
     override fun onPlayerJoin(event: PlayerJoinEvent) {

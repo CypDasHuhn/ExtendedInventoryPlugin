@@ -13,10 +13,11 @@ import org.bukkit.plugin.java.JavaPlugin
  *
  * TODO: Add Doc Link
  */
-abstract class RoosterPlugin : JavaPlugin(), RoosterShell {
+abstract class RoosterPlugin(private val pluginName: String) : JavaPlugin(), RoosterShell {
     final override fun onEnable() {
-        initializeRooster(this)
+        initializeRooster(this, pluginName)
     }
 
-    final override fun initializeRooster(plugin: JavaPlugin) = super.initializeRooster(plugin)
+    final override fun initializeRooster(plugin: JavaPlugin, pluginName: String) =
+        super.initializeRooster(plugin, pluginName)
 }

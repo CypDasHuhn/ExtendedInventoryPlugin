@@ -67,10 +67,11 @@ java {
 
 bukkit {
     name = "ExtendedInventoryPlugin"
-    main = "de.cypdashuhn.extendedInventoryPlugin.Main"
+    main = "de.cypdashuhn.extendedInventoryPlugin.OtherMain"
     apiVersion = "1.21"
 
     commands {
+        register("test")
         register("ei")
         register("testInterface")
     }

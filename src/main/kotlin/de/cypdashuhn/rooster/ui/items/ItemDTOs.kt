@@ -50,7 +50,3 @@ class ItemStackCreator<T : Context> {
         return itemStackCreator
     }
 }
-
-fun test() {
-    var condition = Condition<Context>(0)
-}

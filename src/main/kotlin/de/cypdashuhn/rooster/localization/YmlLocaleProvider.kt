@@ -4,9 +4,10 @@ import de.cypdashuhn.rooster.database.YmlOperations
 import de.cypdashuhn.rooster.database.YmlShell
 import de.cypdashuhn.rooster.util.uuid
 import org.bukkit.entity.Player
+import java.util.Locale
 
 class YmlLocaleProvider(
-    override var locales: List<Language>,
+    override var locales: Map<Language, Locale>,
     override var defaultLocale: Language
 ) : LocaleProvider(locales, defaultLocale), YmlOperations by YmlShell("languages.yml") {
     private val playerKey = "PlayerLanguages"

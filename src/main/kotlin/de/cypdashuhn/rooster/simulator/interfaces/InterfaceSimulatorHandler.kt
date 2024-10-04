@@ -123,13 +123,14 @@ object InterfaceSimulatorHandler {
 
         requireNotNull(Simulator.player) { "Simulator not initialized" }
 
+        val inventoryView = Simulator.player!!.openInventory
+
         val event = InventoryClickEvent(
             Simulator.player!!.openInventory,
             InventoryType.SlotType.CONTAINER,
             slot,
             clickState,
-            InventoryAction.NOTHING,
-            -1
+            InventoryAction.NOTHING
         )
         val item = Simulator.currentInventory!!.getItem(slot)
         val click = Click(event, Simulator.player!!, item, item?.type, event.slot)

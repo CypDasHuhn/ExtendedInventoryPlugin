@@ -5,7 +5,7 @@ import de.cypdashuhn.rooster.core.RoosterShell
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 
-abstract class RoosterSimulator : RoosterShell {
+abstract class RoosterSimulator(val pluginName: String = "demo") : RoosterShell {
     fun startTerminal() {
         Simulator.initializeSimulator(this)
 
@@ -19,8 +19,8 @@ abstract class RoosterSimulator : RoosterShell {
         if (!preserveFolder) Simulator.deleteMockDirectory()
     }
 
-    final override fun initializeRooster(plugin: JavaPlugin) {
-        super.initializeRooster(plugin)
+    final override fun initializeRooster(plugin: JavaPlugin, pluginName: String) {
+        super.initializeRooster(plugin, pluginName)
         val directoryPath = Rooster.plugin.dataFolder.absolutePath
         val clickablePath =
             "file:///$directoryPath".replace("\\", "/") // Ensure the format is proper for clickable URLs

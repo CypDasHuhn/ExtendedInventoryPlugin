@@ -7,7 +7,7 @@ import de.cypdashuhn.rooster.database.findEntry
 import de.cypdashuhn.rooster.database.utility_tables.PlayerManager
 import de.cypdashuhn.rooster.listeners.ClickState
 import de.cypdashuhn.rooster.listeners.hasClicks
-import de.cypdashuhn.rooster.localization.tComponent
+import de.cypdashuhn.rooster.localization.t
 import de.cypdashuhn.rooster.simulator.Simulator
 import de.cypdashuhn.rooster.ui.interfaces.Context
 import de.cypdashuhn.rooster.ui.interfaces.Interface
@@ -149,7 +149,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.COMPASS,
-                        tComponent("item_interface_navigation", it.player)
+                        t("item_interface_navigation", it.player)
                     )
                 },
                 action = { (click, context, event) ->
@@ -180,7 +180,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.SPYGLASS,
-                        tComponent("item_interface_switch_edit", it.player)
+                        t("item_interface_switch_edit", it.player)
                     )
                 },
                 action = { (click, context, _) ->
@@ -192,7 +192,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.IRON_PICKAXE,
-                        tComponent("item_interface_switch_navigate", it.player)
+                        t("item_interface_switch_navigate", it.player)
                     )
                 },
                 action = { (click, context, _) ->
@@ -205,7 +205,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.IRON_BOOTS,
-                        tComponent("item_interface_jumpto_coord", it.player)
+                        t("item_interface_jumpto_coord", it.player)
                     )
                 },
                 action = { TODO("INTERFACE - Anvil GUI & Coordinates") }
@@ -215,7 +215,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.GOLDEN_BOOTS,
-                        tComponent("item_interface_jumpto_name", it.player)
+                        t("item_interface_jumpto_name", it.player)
                     )
                 },
                 action = { TODO("INTERFACE - Anvil GUI & Registered Position Names") }
@@ -225,7 +225,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.REPEATER,
-                        tComponent("item_interface_filter", it.player)
+                        t("item_interface_filter", it.player)
                     )
                 },
                 action = { TODO("INTERFACE - Filter attributes") }
@@ -236,7 +236,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.OAK_SIGN,
-                        tComponent("item_interface_create_position", it.player)
+                        t("item_interface_create_position", it.player)
                     )
                 },
                 action = { TODO("ACTION - create new registered position") }
@@ -246,7 +246,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.BOOK,
-                        tComponent("item_interface_manage_positions", it.player)
+                        t("item_interface_manage_positions", it.player)
                     )
                 },
                 action = { TODO("INTERFACE - manage registered positions") }
@@ -256,7 +256,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.BOOK,
-                        tComponent("item_interface_region_shift", it.player)
+                        t("item_interface_region_shift", it.player)
                     )
                 },
                 action = { (click, context, _) ->
@@ -268,7 +268,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.BOOK,
-                        tComponent("item_interface_move", it.player)
+                        t("item_interface_move", it.player)
                     )
                 },
                 action = { (click, context, _) ->
@@ -280,7 +280,7 @@ object ItemInterface : Interface<ItemInterfaceContext>("item_interface", ItemInt
                 itemStackCreator = {
                     createItem(
                         Material.BOOK,
-                        tComponent("item_interface_move_finish", it.player)
+                        t("item_interface_move_finish", it.player)
                     )
                 },
                 action = { (click, context, _) ->

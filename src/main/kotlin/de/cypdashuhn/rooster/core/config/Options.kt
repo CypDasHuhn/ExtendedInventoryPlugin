@@ -7,16 +7,21 @@ object RoosterOptions {
         ALL,
         INTERFACE(ALL),
         INTERFACE_PAGES(INTERFACE),
-        INTERFACE_PAGES_EMPTY({ "Interface pages are empty!" }, INTERFACE_PAGES),
+        INTERFACE_PAGES_EMPTY({
+            "Interface pages are empty!"
+        }, INTERFACE_PAGES),
         INTERFACE_PAGES_OVERLAP({
             val map = it as Map<Int, Int>
             val string = map.map { "${it.key} (${it.value}x)" }.joinToString { ", " }
             "Following Interface Pages defined multiple Times: $string"
         }, INTERFACE_PAGES),
-        INTERFACE_PAGES_SKIPPED_FIRST(
-            { "First Page was skipped. If you didn't knew, Page-Index starts at 0." },
-            INTERFACE_PAGES
-        )
+        INTERFACE_PAGES_SKIPPED_FIRST({
+            "First Page was skipped. If you didn't knew, Page-Index starts at 0."
+        }, INTERFACE_PAGES),
+        LOCALIZATION(ALL),
+        LOCALIZATION_MISSING_LOCALE({
+            "Missing Locale: ${(it as Pair<*, *>).first} for Language: ${(it).second}"
+        }, LOCALIZATION)
 
         ;
 
@@ -53,6 +58,14 @@ object RoosterOptions {
             if (RoosterSettings.getWarningOption(this)) {
                 Rooster.roosterLogger.warning("${warningMethod(obj)} | #Warning.${this.name}#")
             }
+        }
+
+        fun disable() {
+            RoosterSettings.setWarningOption(this, false)
+        }
+
+        fun enable() {
+            RoosterSettings.setWarningOption(this, true)
         }
     }
 }

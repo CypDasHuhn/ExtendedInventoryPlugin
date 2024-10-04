@@ -39,9 +39,9 @@ var languageCommandArguments = CentralizedArgumentList(
                 val scaleKey = if (global) "scale_global" else "scale_your"
                 val langKey = "lang_${targetLang.toString().lowercase()}"
                 sender.tSend(
-                    "set_language",
-                    Pair("scale", t(scaleKey, language.toString())),
-                    Pair("lang", t(langKey, language.toString()))
+                    "set_language", // TODO: OOF
+                    Pair("scale", t(scaleKey, language.toString()).toString()),
+                    Pair("lang", t(langKey, language.toString()).toString())
                 )
             }
 

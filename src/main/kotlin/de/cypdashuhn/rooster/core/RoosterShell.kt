@@ -6,6 +6,7 @@ import de.cypdashuhn.rooster.ui.context.InterfaceContextProvider
 import de.cypdashuhn.rooster.ui.context.SqlInterfaceContextProvider
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.*
 
 interface RoosterShell {
     /**
@@ -16,7 +17,7 @@ interface RoosterShell {
      * If you don't want to use Expose Tables, you can use other Providers.
      * Read more about it here: TODO: Add Doc Link
      */
-    fun getLocaleProvider(): LocaleProvider = SqlLocaleProvider(listOf("en"), "en")
+    fun getLocaleProvider(): LocaleProvider = SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US")
 
     /**
      * Provides the [InterfaceContextProvider] for managing plugin interfaces.
@@ -59,10 +60,11 @@ interface RoosterShell {
      */
     fun onPlayerJoin(event: PlayerJoinEvent) {}
 
-    fun initializeRooster(plugin: JavaPlugin) {
+    fun initializeRooster(plugin: JavaPlugin, pluginName: String) {
         beforeInitialize()
         Rooster.initialize(
             plugin = plugin,
+            pluginName = pluginName,
             localeProvider = getLocaleProvider(),
             interfaceContextProvider = getInterfaceContextProvider(),
             beforePlayerJoin = ::beforePlayerJoin,

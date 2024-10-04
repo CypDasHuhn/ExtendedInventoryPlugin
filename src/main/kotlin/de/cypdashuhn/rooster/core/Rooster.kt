@@ -28,6 +28,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.sql.Table
 import java.lang.reflect.Method
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.logging.Logger
 import kotlin.reflect.KClass
@@ -43,6 +44,15 @@ object Rooster {
             }
             return plugin.logger
         }
+
+    fun runTask(task: () -> Unit) {
+        if (!::plugin.isInitialized) {
+            throw IllegalStateException("Plugin is not initialized. Do not use the Logger before Rooster is initialized.")
+        }
+        Bukkit.getScheduler().runTask(plugin, Runnable { task() })
+    }
+
+    lateinit var pluginName: String
 
     var databasePath: String? = null
     val pluginFolder: String by lazy { plugin.dataFolder.absolutePath }
@@ -72,7 +82,8 @@ object Rooster {
 
     fun initialize(
         plugin: JavaPlugin,
-        localeProvider: LocaleProvider = SqlLocaleProvider(listOf("en"), "en"),
+        pluginName: String,
+        localeProvider: LocaleProvider = SqlLocaleProvider(mapOf("en_US" to Locale.ENGLISH), "en_US"),
         interfaceContextProvider: InterfaceContextProvider = SqlInterfaceContextProvider(),
         beforePlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
         onPlayerJoin: ((PlayerJoinEvent) -> Unit) = {},
@@ -83,6 +94,7 @@ object Rooster {
         Rooster.interfaceContextProvider = interfaceContextProvider
 
         Rooster.plugin = plugin
+        this.pluginName = pluginName
         if (databasePath == null) databasePath = plugin.dataFolder.resolve("database.db").absolutePath
 
         if (!plugin.dataFolder.exists()) {
