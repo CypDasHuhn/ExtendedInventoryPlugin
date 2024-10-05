@@ -50,6 +50,7 @@ dependencies {
 
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("com.github.seeseemelk:MockBukkit-v1.21:3.127.1")
+    implementation("com.mojang:brigadier:1.0.18")
 
     bukkitLibrary("org.jetbrains.kotlin:kotlin-stdlib:2.0.20")
 }

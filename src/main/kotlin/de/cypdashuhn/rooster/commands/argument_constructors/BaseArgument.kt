@@ -44,6 +44,15 @@ fun errorMessage(
     } else { argInfo -> argInfo.sender.tSend(messageKey) }
 }
 
+class TabCompleter(
+    tabCompletions: CompletionLambda?
+)
+
+abstract class _BaseArgument(
+    open var isArgument: ArgumentPredicate = defaultTrue,
+
+    )
+
 abstract class BaseArgument(
     open var isArgument: ArgumentPredicate = defaultTrue,
     open var tabCompletions: CompletionLambda? = null,
